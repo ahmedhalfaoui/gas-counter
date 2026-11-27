@@ -155,7 +155,11 @@ header.top .sound{position:static;width:46px;height:46px;font-size:1.3rem}
 .sheet.noanim{animation:none}
 .sheet{position:fixed;left:0;right:0;bottom:0;z-index:26;max-height:88vh;overflow-y:auto;background:var(--card);border-top:4px solid var(--ink);border-radius:28px 28px 0 0;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));animation:up .28s cubic-bezier(.3,1.4,.5,1)}
 .sheet-in{max-width:600px;margin:0 auto}
-.grab{width:50px;height:6px;border-radius:9px;background:var(--ink);opacity:.3;margin:0 auto 10px}
+.grabzone{position:sticky;top:-10px;z-index:2;background:var(--card);margin:-10px -4px 6px;padding:12px 0 10px;touch-action:none;cursor:grab}
+.grab{width:60px;height:7px;border-radius:9px;background:var(--ink);opacity:.35;margin:0 auto}
+.sheet-x{position:absolute;left:4px;top:6px;width:38px;height:38px;border-radius:50%;border:3px solid var(--ink);background:var(--white);font:700 1.1rem var(--body);color:var(--ink);cursor:pointer;box-shadow:2px 2px 0 var(--ink)}
+.sheet.dragging{transition:none}
+.sheet.snap{transition:transform .25s ease}
 .sheet .member{grid-template-columns:auto 1fr auto}
 .sheet h4{margin:16px 0 6px;font-size:.95rem}
 .sheet .stink button{padding:10px 2px}
@@ -499,7 +503,7 @@ function renderSheet(){
   const keepScroll = el.querySelector('.sheet')?.scrollTop || 0, fresh = !el.innerHTML;
   el.innerHTML = `<div class="sheet-bg" data-closesheet="1"></div>
     <div class="sheet${fresh ? '' : ' noanim'}" role="dialog" aria-label="${esc(m.name)}"><div class="sheet-in">
-      <div class="grab"></div>
+      <div class="grabzone"><div class="grab"></div><button class="sheet-x" data-closesheet="1" aria-label="إغلاق">✕</button></div>
       <div class="member">
         <button class="avatar" data-photo="${m.id}" title="غيّر الصورة">${avatarHTML(m)}</button>
         <div><div class="name">${esc(m.name)}</div><div class="role">${esc(m.role)} · ⭐ ${x.points} نقطة اليوم · 🤢 ${avg}</div></div>
@@ -795,6 +799,40 @@ document.addEventListener('click', ev => {
     renderAll();
   }
 });
+/* Swipe the logging panel down to close it */
+let drag = null;
+function closeSheetAnimated(sh){
+  sh.classList.add('snap'); sh.style.transform = 'translateY(100%)';
+  const bg = document.querySelector('.sheet-bg'); if(bg) bg.style.opacity = '0';
+  setTimeout(() => { sheetFor = null; renderSheet(); }, 230);
+}
+document.addEventListener('touchstart', ev => {
+  const sh = ev.target.closest('.sheet'); if(!sh || ev.touches.length !== 1) return;
+  const onHandle = !!ev.target.closest('.grabzone') && !ev.target.closest('.sheet-x');
+  if(!onHandle && sh.scrollTop > 0) return;
+  drag = {sh, y0: ev.touches[0].clientY, dy: 0, handle: onHandle, active: false};
+}, {passive:true});
+document.addEventListener('touchmove', ev => {
+  if(!drag) return;
+  const dy = ev.touches[0].clientY - drag.y0;
+  if(!drag.active){
+    if(dy > 8 && (drag.handle || drag.sh.scrollTop <= 0)){ drag.active = true; drag.sh.classList.remove('snap'); drag.sh.classList.add('dragging'); }
+    else if(dy < -8 && !drag.handle){ drag = null; return; }
+    else return;
+  }
+  ev.preventDefault();
+  drag.dy = Math.max(0, dy);
+  drag.sh.style.transform = `translateY(${drag.dy}px)`;
+  const bg = document.querySelector('.sheet-bg'); if(bg) bg.style.opacity = String(Math.max(.2, 1 - drag.dy/400));
+}, {passive:false});
+document.addEventListener('touchend', () => {
+  if(!drag) return; const d = drag; drag = null;
+  if(!d.active) return;
+  d.sh.classList.remove('dragging');
+  if(d.dy > 90) closeSheetAnimated(d.sh);
+  else { d.sh.classList.add('snap'); d.sh.style.transform = ''; const bg = document.querySelector('.sheet-bg'); if(bg) bg.style.opacity = ''; }
+});
+document.addEventListener('touchcancel', () => { if(drag){ drag.sh.style.transform = ''; drag = null; } });
 document.addEventListener('keydown', ev => { if(ev.key === 'Escape' && sheetFor){ sheetFor = null; renderSheet(); } });
 document.addEventListener('change', ev => { if(ev.target.id === 'monthsel'){ monthSel = ev.target.value; renderAll(); } });
 
