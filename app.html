@@ -37,7 +37,9 @@ h1{margin:0;font-family:var(--display);font-weight:400;font-size:2.6rem;line-hei
 .member{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
 .avatar{font-size:2.6rem;width:66px;height:66px;display:grid;place-items:center;border-radius:50%;border:3px solid var(--ink);background:var(--yellow);box-shadow:3px 3px 0 var(--ink);overflow:hidden;cursor:pointer;padding:0;position:relative}
 .avatar img{width:100%;height:100%;object-fit:cover}
-.avatar .cam{position:absolute;bottom:-2px;left:-2px;font-size:.9rem;background:var(--white);border-radius:50%;border:2px solid var(--ink);width:22px;height:22px;display:grid;place-items:center}
+.avatar svg{width:100%;height:100%;display:block}
+.face{display:inline-block;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--ink);background:var(--yellow);vertical-align:middle;overflow:hidden}
+.face svg{width:100%;height:100%;display:block}
 .m1 .avatar{background:var(--pink)}.m2 .avatar{background:var(--blue)}.m3 .avatar{background:var(--orange)}
 .name{font-family:var(--display);font-size:1.45rem;line-height:1.2}
 .role{font-size:.85rem;color:var(--muted)}
@@ -399,10 +401,46 @@ function winnerOf(k){ const r = ranking(stats(e => e.month === k)); return r[0].
 function winsCount(){ const w = {}; MEMBERS.forEach(m => w[m.id]=0); pastMonths().forEach(k => { const x = winnerOf(k); if(x) w[x.id]++; }); return w; }
 
 /* ============ RENDER ============ */
-const avatarHTML = (m, big) => PHOTOS[m.id] && /^data:image\//.test(PHOTOS[m.id])
-  ? `<img src="${esc(PHOTOS[m.id])}" alt="${esc(m.name)}">` : m.avatar;
-const small = m => PHOTOS[m.id] && /^data:image\//.test(PHOTOS[m.id])
-  ? `<img src="${esc(PHOTOS[m.id])}" alt="" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;border:1px solid var(--ink);object-fit:cover">` : m.avatar;
+/* Hand-drawn cartoon faces (viewBox 100×100, ink outlines like the logo) */
+const INK = '#2a1a3b';
+const FACE_BASE = (skin) => `<circle cx="21" cy="58" r="7" fill="${skin}" stroke="${INK}" stroke-width="3.5"/><circle cx="79" cy="58" r="7" fill="${skin}" stroke="${INK}" stroke-width="3.5"/>
+  <circle cx="50" cy="57" r="30" fill="${skin}" stroke="${INK}" stroke-width="4"/>`;
+const CHEEKS = `<ellipse cx="34" cy="67" rx="6" ry="3.5" fill="#ff8fb8"/><ellipse cx="66" cy="67" rx="6" ry="3.5" fill="#ff8fb8"/>`;
+const FACES = {
+  // Louay: spiky hair, cheeky wink, big grin with tongue
+  louay: `${FACE_BASE('#f7c99c')}
+    <path d="M21 52 Q18 27 39 24 L42 13 L50 22 L58 12 L62 24 Q82 27 79 52 Q72 37 50 37 Q28 37 21 52Z" fill="#5a3418" stroke="${INK}" stroke-width="3.5" stroke-linejoin="round"/>
+    <path d="M35 55 q5 -5 10 0" fill="none" stroke="${INK}" stroke-width="3.5" stroke-linecap="round"/><circle cx="62" cy="54" r="4" fill="${INK}"/><circle cx="63.3" cy="52.6" r="1.3" fill="#fff"/>
+    ${CHEEKS}<path d="M37 67 q13 15 26 0 z" fill="${INK}"/><path d="M45 73 q5 7 10 0 q-5 -3 -10 0z" fill="#ff6fae"/>`,
+  // Ben Yahia "Bois Dur": shiny bald head, big bushy beard and moustache, stern brows
+  dad: `${FACE_BASE('#e9b285')}
+    <ellipse cx="40" cy="35" rx="9" ry="5" fill="#fff" opacity=".45" transform="rotate(-25 40 35)"/>
+    <path d="M22 50 q2 -9 8 -12 M78 50 q-2 -9 -8 -12" stroke="#3a2a22" stroke-width="7" stroke-linecap="round" fill="none"/>
+    <path d="M33 47 l12 3 M67 47 l-12 3" stroke="${INK}" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="40" cy="55" r="3.6" fill="${INK}"/><circle cx="60" cy="55" r="3.6" fill="${INK}"/>
+    <path d="M20 58 Q19 95 50 95 Q81 95 80 58 Q72 74 50 72 Q28 74 20 58Z" fill="#3a2a22" stroke="${INK}" stroke-width="3.5" stroke-linejoin="round"/>
+    <path d="M35 69 q7 -8 15 -2 q8 -6 15 2 q-7 6 -15 1 q-8 5 -15 -1z" fill="#2a1d17" stroke="${INK}" stroke-width="2.5"/>
+    <ellipse cx="50" cy="78" rx="6" ry="4" fill="#ff6fae" stroke="${INK}" stroke-width="2.5"/>`,
+  // Hafida: hair bun, lashes, red lips, gold earrings
+  mom: `<circle cx="50" cy="19" r="11" fill="#6b2f1d" stroke="${INK}" stroke-width="3.5"/>
+    ${FACE_BASE('#f4c6a0')}
+    <path d="M20 58 Q17 29 50 28 Q83 29 80 58 Q76 40 58 38 Q52 46 40 42 Q26 42 20 58Z" fill="#6b2f1d" stroke="${INK}" stroke-width="3.5" stroke-linejoin="round"/>
+    <circle cx="40" cy="56" r="4" fill="${INK}"/><circle cx="60" cy="56" r="4" fill="${INK}"/>
+    <path d="M35 51 l-3 -3 M38 50 l-1 -4 M65 51 l3 -3 M62 50 l1 -4" stroke="${INK}" stroke-width="2.2" stroke-linecap="round"/>
+    ${CHEEKS}<path d="M41 69 q9 8 18 0 q-9 3 -18 0z" fill="#e0457b" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
+    <circle cx="20" cy="69" r="4" fill="#ffd23f" stroke="${INK}" stroke-width="2"/><circle cx="80" cy="69" r="4" fill="#ffd23f" stroke="${INK}" stroke-width="2"/>`,
+  // Abdelkader: curly hair, cool sunglasses, smirk
+  abdelkader: `${FACE_BASE('#efbd8f')}
+    <g fill="#2b1d14" stroke="${INK}" stroke-width="3"><circle cx="28" cy="40" r="9"/><circle cx="39" cy="31" r="10"/><circle cx="52" cy="28" r="10"/><circle cx="65" cy="31" r="10"/><circle cx="74" cy="41" r="9"/></g>
+    <path d="M27 52 h20 v6 q0 7 -10 7 q-10 0 -10 -7z M53 52 h20 v6 q0 7 -10 7 q-10 0 -10 -7z" fill="${INK}"/>
+    <path d="M47 54 h6" stroke="${INK}" stroke-width="3"/><path d="M31 55 l5 0 M57 55 l5 0" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+    <path d="M42 73 q8 5 17 -3" fill="none" stroke="${INK}" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M42 68 q8 -3 16 0" fill="none" stroke="#2b1d14" stroke-width="3" stroke-linecap="round"/>`
+};
+const faceSVG = id => FACES[id] ? `<svg viewBox="2 4 96 96" aria-hidden="true">${FACES[id]}</svg>` : '';
+const hasPhoto = m => PHOTOS[m.id] && /^data:image\//.test(PHOTOS[m.id]);
+const avatarHTML = m => hasPhoto(m) ? `<img src="${esc(PHOTOS[m.id])}" alt="${esc(m.name)}">` : (faceSVG(m.id) || m.avatar);
+const small = m => `<span class="face">${hasPhoto(m) ? `<img src="${esc(PHOTOS[m.id])}" alt="" style="width:100%;height:100%;object-fit:cover">` : faceSVG(m.id)}</span>`;
 
 function renderAll(){
   rebuild();
@@ -460,7 +498,7 @@ function renderSheet(){
     <div class="sheet${fresh ? '' : ' noanim'}" role="dialog" aria-label="${esc(m.name)}"><div class="sheet-in">
       <div class="grab"></div>
       <div class="member">
-        <button class="avatar" data-photo="${m.id}" title="غيّر الصورة">${avatarHTML(m)}<span class="cam">📷</span></button>
+        <button class="avatar" data-photo="${m.id}" title="غيّر الصورة">${avatarHTML(m)}</button>
         <div><div class="name">${esc(m.name)}</div><div class="role">${esc(m.role)} · ⭐ ${x.points} نقطة اليوم · 🤢 ${avg}</div></div>
         <div class="count" id="sheetcount"><b>${x.count}</b><small>غاز اليوم</small></div>
       </div>
