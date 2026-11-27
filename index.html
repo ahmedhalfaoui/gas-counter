@@ -542,13 +542,17 @@ function fanfare(){
     o.connect(g); g.connect(a.destination); o.start(t); o.stop(t+.9);
   });
 }
+function phoneSpeak(text){
+  try { if('speechSynthesis' in window){ speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'ar'; speechSynthesis.speak(u); } } catch(e) {}
+}
 function announce(text){
   const a = $('announcer'); a.textContent = '📢 ' + text; a.classList.add('show');
   clearTimeout(a._h); a._h = setTimeout(() => a.classList.remove('show'), 4200);
   if(!soundOn) return;
   const plain = text.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}️‍]/gu, '').trim();
-  // Only Claude's voice; where it isn't offered the commentary stays on screen as text.
-  if(tts) tts.speak(plain, {language:'ar'}).catch(() => {});
+  // Claude's voice where it is offered, otherwise the phone's own voice.
+  if(tts){ tts.speak(plain, {language:'ar'}).catch(() => phoneSpeak(plain)); return; }
+  phoneSpeak(plain);
 }
 function confetti(){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -683,7 +687,7 @@ document.addEventListener('click', ev => {
   if(b = q('[data-celebrate]')){ celebrate(b.dataset.celebrate); return; }
   if(b = q('[data-cert]')){ certificate(b.dataset.cert); return; }
   if(ev.target.closest('[data-close]') && (ev.target.dataset.close || ev.target.closest('button[data-close]'))){ $('overlay').innerHTML = ''; return; }
-  if(q('#sound')){ soundOn = !soundOn; ls.set('gas-sound', soundOn ? 'on' : 'off'); if(!soundOn){ try { tts?.stop(); } catch(e) {} } renderAll(); return; }
+  if(q('#sound')){ soundOn = !soundOn; ls.set('gas-sound', soundOn ? 'on' : 'off'); if(!soundOn){ try { tts?.stop(); speechSynthesis?.cancel(); } catch(e) {} } renderAll(); return; }
   if(b = q('[data-tab]')){
     tab = b.dataset.tab;
     document.querySelectorAll('[data-tab]').forEach(x => x.classList.toggle('on', x === b));
