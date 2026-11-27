@@ -95,7 +95,7 @@ td.num{font-family:var(--display);font-size:1.3rem;font-variant-numeric:tabular-
 .badge.locked{background:transparent;opacity:.4;filter:grayscale(1);font-weight:400}
 .btn{border:3px solid var(--ink);background:var(--yellow);border-radius:12px;padding:6px 12px;font:inherit;font-weight:700;color:var(--ink);cursor:pointer;box-shadow:3px 3px 0 var(--ink)}
 .btn.small{padding:2px 8px;font-size:.75rem;border-width:2px;box-shadow:2px 2px 0 var(--ink)}
-.announcer{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%) translateY(-200%);width:min(92vw,560px);background:var(--ink);color:var(--yellow);border:3px solid var(--yellow);border-radius:16px;padding:10px 14px;font-weight:700;z-index:20;transition:transform .3s cubic-bezier(.5,1.6,.5,1);text-align:center}
+.announcer{z-index:40!important;position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%) translateY(-200%);width:min(92vw,560px);background:var(--ink);color:var(--yellow);border:3px solid var(--yellow);border-radius:16px;padding:10px 14px;font-weight:700;z-index:20;transition:transform .3s cubic-bezier(.5,1.6,.5,1);text-align:center}
 .announcer.show{transform:translateX(-50%) translateY(0)}
 .toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%) scale(0);background:var(--pink);color:var(--white);border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:10px 20px;border-radius:20px;transition:.25s cubic-bezier(.5,2,.5,1);pointer-events:none;font-family:var(--display);font-size:1.2rem;white-space:nowrap;z-index:9;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
 .toast.show{transform:translateX(-50%) scale(1) rotate(-3deg)}
@@ -111,33 +111,83 @@ select{font:inherit;padding:6px 10px;border-radius:12px;border:3px solid var(--i
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:31}
 button:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--purple);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* ---- app shell ---- */
+.app{padding-block:10px calc(110px + env(safe-area-inset-bottom,0px))}
+header.top{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;text-align:right;padding:4px 0 0}
+header.top .logo{position:static;width:54px;height:54px;transform:rotate(-8deg);filter:drop-shadow(3px 3px 0 var(--ink));animation:float 4s ease-in-out infinite}
+header.top h1{font-size:2rem;transform:rotate(-2deg);-webkit-text-stroke:1.5px var(--ink);text-shadow:3px 3px 0 var(--ink);animation:none}
+.countdown{display:inline-block;margin-top:4px;font-size:.75rem;font-weight:700;background:var(--pink);color:var(--white);border:2px solid var(--ink);border-radius:999px;padding:1px 10px;box-shadow:2px 2px 0 var(--ink)}
+header.top .sound{position:static;width:46px;height:46px;font-size:1.3rem}
+.status{margin:8px 0 12px}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:15;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--card);border-top:3px solid var(--ink);padding:6px max(10px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px))}
+.tabbar button{border:0;background:none;font:inherit;font-size:.72rem;font-weight:700;color:var(--muted);padding:4px 0;border-radius:14px;cursor:pointer;display:grid;justify-items:center;gap:1px}
+.tabbar button span{font-size:1.35rem;line-height:1.2;transition:transform .15s}
+.tabbar button.on{background:var(--yellow);color:var(--ink);border:2px solid var(--ink);box-shadow:2px 2px 0 var(--ink)}
+.tabbar button.on span{transform:scale(1.15) rotate(-8deg)}
+.toast{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+/* ---- today ---- */
+.challenge{padding:10px 14px;font-size:.9rem}
+.challenge b{font-size:1.1rem}
+.race{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;align-items:end;text-align:center}
+.race .r{display:grid;justify-items:center;gap:2px;font-size:.7rem;font-weight:700;position:relative}
+.race .ra{width:44px;height:44px;border-radius:50%;border:3px solid var(--ink);display:grid;place-items:center;font-size:1.5rem;overflow:hidden;background:var(--white)}
+.race .ra img{width:100%;height:100%;object-fit:cover}
+.race .r.p1 .ra{width:56px;height:56px;background:var(--yellow);box-shadow:3px 3px 0 var(--ink)}
+.race .r.p1::before{content:"👑";position:absolute;top:-18px;font-size:1.2rem;animation:wobble 1.5s ease-in-out infinite}
+.race .pts{font-family:var(--display);font-weight:400;font-size:1.1rem;line-height:1}
+.race .bar{width:100%;border:2px solid var(--ink);border-radius:8px 8px 0 0;background:var(--purple);min-height:6px}
+.hint{text-align:center;font-weight:700;margin:4px 0 10px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.tile{border:3px solid var(--ink);border-radius:22px 16px 24px 14px;background:var(--card);box-shadow:5px 5px 0 var(--ink);padding:12px 8px;font:inherit;color:var(--ink);cursor:pointer;display:grid;justify-items:center;gap:4px;text-align:center;transition:transform .1s}
+.tile:nth-child(1){transform:rotate(-1.5deg)}.tile:nth-child(2){transform:rotate(1.5deg)}.tile:nth-child(3){transform:rotate(1deg)}.tile:nth-child(4){transform:rotate(-1deg)}
+.tile:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--ink)}
+.tile .avatar{width:64px;height:64px;font-size:2.4rem;cursor:pointer}
+.tile:nth-child(2) .avatar{background:var(--pink)}.tile:nth-child(3) .avatar{background:var(--blue)}.tile:nth-child(4) .avatar{background:var(--orange)}
+.tile .tn{font-family:var(--display);font-size:1.2rem;line-height:1.15}
+.tile .tcount{background:var(--green);border:2px solid var(--ink);border-radius:999px;padding:0 10px;font-weight:700;font-size:.85rem}
+.tile .tcount b{font-family:var(--display);font-weight:400;font-size:1.3rem}
+.tile .tsub{font-size:.7rem;color:var(--muted)}
+.tile .tap{font-size:.7rem;font-weight:700;background:var(--purple);color:var(--white);border-radius:999px;padding:1px 10px;border:2px solid var(--ink)}
+/* ---- bottom sheet ---- */
+.sheet-bg{position:fixed;inset:0;z-index:25;background:#2a1a3b99;animation:fade .2s}
+.sheet.noanim{animation:none}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:26;max-height:88vh;overflow-y:auto;background:var(--card);border-top:4px solid var(--ink);border-radius:28px 28px 0 0;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));animation:up .28s cubic-bezier(.3,1.4,.5,1)}
+.sheet-in{max-width:600px;margin:0 auto}
+.grab{width:50px;height:6px;border-radius:9px;background:var(--ink);opacity:.3;margin:0 auto 10px}
+.sheet .member{grid-template-columns:auto 1fr auto}
+.sheet h4{margin:16px 0 6px;font-size:.95rem}
+.sheet .stink button{padding:10px 2px}
+.sheet .stink button span{font-size:2rem}
+.sheet .grid2{margin-top:0}
+.sheet .sbtns{display:flex;gap:8px;justify-content:space-between;margin-top:16px;flex-wrap:wrap}
+@keyframes up{from{transform:translateY(100%)}}
+@keyframes fade{from{opacity:0}}
+.rules{font-size:.8rem;line-height:1.7}
 </style>
 
 <div class="app" dir="rtl" lang="ar">
-  <header>
-    <img class="logo" src="icon.svg" alt=""><span class="clouds r">💨</span>
-    <h1>عدّاد الغازات<br>العائلي</h1><br>
-    <p class="sub">من سيكون ملك النووي هذا الشهر؟ ☢️👑</p>
-    <div class="status" id="status"></div>
+  <header class="top">
+    <img class="logo" src="icon.svg" alt="">
+    <div class="htxt"><h1>عدّاد الغازات</h1><div class="countdown" id="countdown"></div></div>
+    <button class="sound" id="sound" title="الصوت والمذيع">🔊</button>
   </header>
-
-  <nav class="tabs">
-    <button data-tab="today" class="on">اليوم</button>
-    <button data-tab="month">الترتيب</button>
-    <button data-tab="stats">الإحصائيات</button>
-    <button data-tab="history">الأبطال</button>
-  </nav>
+  <div class="status" id="status"></div>
 
   <section id="today"></section>
   <section id="month" hidden></section>
   <section id="stats" hidden></section>
   <section id="history" hidden></section>
 
-  <p class="note">النقاط = درجة كراهة الرائحة 🤢 (بعد تصويت العائلة) × مضاعف تحدي اليوم<br>⭐ ونقاط إضافية للإنجازات الخاصة<br>صاحب أكثر نقاط في الشهر يفوز 🏆</p>
+  <nav class="tabbar">
+    <button data-tab="today" class="on"><span>💨</span>اليوم</button>
+    <button data-tab="month"><span>🏁</span>الترتيب</button>
+    <button data-tab="stats"><span>📊</span>الإحصائيات</button>
+    <button data-tab="history"><span>👑</span>الأبطال</button>
+  </nav>
+  <div id="sheet"></div>
 
   <div class="toast" id="toast"></div>
   <div class="announcer" id="announcer"></div>
-  <button class="sound" id="sound" title="الصوت والمذيع">🔊</button>
   <input type="file" id="photo" accept="image/*" hidden>
   <div id="overlay"></div>
 </div>
@@ -146,10 +196,10 @@ button:focus-visible,select:focus-visible,summary:focus-visible{outline:3px soli
 <script>
 /* ============ CONFIG ============ */
 const MEMBERS = [
-  {id:'louay', name:'لؤي زكروط', role:'الإبن', avatar:'👦'},
-  {id:'dad', name:'بن يحي Bois Dur', role:'الأب', avatar:'🧔‍♂️'},
-  {id:'mom', name:'حفيظة حشحوشة', role:'الأم', avatar:'👩'},
-  {id:'abdelkader', name:'عبد القادر', role:'الإبن', avatar:'🧑'}
+  {id:'louay', name:'لؤي زكروط', short:'لؤي', role:'الإبن', avatar:'👦'},
+  {id:'dad', name:'بن يحي Bois Dur', short:'بن يحي', role:'الأب', avatar:'🧔‍♂️'},
+  {id:'mom', name:'حفيظة حشحوشة', short:'حفيظة', role:'الأم', avatar:'👩'},
+  {id:'abdelkader', name:'عبد القادر', short:'عبد القادر', role:'الإبن', avatar:'🧑'}
 ];
 const MEM = Object.fromEntries(MEMBERS.map(m => [m.id, m]));
 const LEVELS = [
@@ -357,46 +407,72 @@ const small = m => PHOTOS[m.id] && /^data:image\//.test(PHOTOS[m.id])
 function renderAll(){
   rebuild();
   ({today:renderToday, month:renderMonth, stats:renderStats, history:renderHistory})[tab]();
+  renderSheet();
+  const now = new Date(), left = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate() - now.getDate();
+  $('countdown').textContent = left === 0 ? '👑 التتويج الليلة!' : `⏳ باقي ${left} ${left <= 10 ? (left === 1 ? 'يوم' : left === 2 ? 'يومان' : 'أيام') : 'يومًا'} على تتويج ملك النووي`;
   $('sound').textContent = soundOn ? '🔊' : '🔇';
 }
 
 function renderToday(){
-  const today = dayKey(new Date());
-  const s = stats(e => e.day === today);
+  const today = dayKey(new Date()), month = monthKey(new Date());
+  const s = stats(e => e.day === today), ms = stats(e => e.month === month);
   const ch = challengeFor(today);
-  const eaten = {}; EVENTS.filter(e => e.day===today && e.kind==='food').forEach(e => (eaten[e.who] ||= {})[e.food] = e.id);
+  const race = ranking(ms), top = Math.max(1, race[0].points);
   const feed = EVENTS.filter(e => e.kind==='gas' && e.day >= addDays(today,-1)).slice(-8).reverse();
   $('today').innerHTML = `
     <div class="card challenge">⚔️ <b>تحدي اليوم:</b> ${esc(ch.text)}</div>
-    <div class="card"><div class="me"><b>📱 مَن يستعمل هذا الهاتف؟</b>
-      ${MEMBERS.map(m => `<button class="chip ${me===m.id?'on':''}" data-me="${m.id}">${small(m)} ${esc(m.name.split(' ')[0])}</button>`).join('')}</div>
-      <div class="muted" style="margin-top:6px">نحتاجه للتصويت على روائح الآخرين 🗳️</div></div>
-    ${MEMBERS.map((m,i) => {
-      const x = s[m.id], avg = x.count ? (x.gasPoints/x.count).toFixed(1) : '—', str = currentStreak(m.id);
-      return `<div class="card m${i}" id="card-${m.id}">
-      <div class="member">
-        <button class="avatar" data-photo="${m.id}" title="غيّر الصورة">${avatarHTML(m)}<span class="cam">📷</span></button>
-        <div><div class="name">${esc(m.name)}</div><div class="role">${esc(m.role)}${str>1 ? ` · 🔥 ${str} أيام متتالية` : ''}</div></div>
-        <div class="count"><b>${x.count}</b><small>غاز اليوم</small></div>
-      </div>
-      <div class="stink">${LEVELS.map(l => `<button data-who="${m.id}" data-v="${l.v}" title="${l.label}"><span>${l.icon}</span><em>${l.label}</em></button>`).join('')}</div>
-      <details class="panel bonus"><summary>⭐ نقاط إضافية${x.bonus ? ` <small>(${x.bonus} اليوم)</small>` : ''}</summary>
-        <div class="grid2">${BONUSES.map(b => `<button data-bonus="${b.id}" data-who="${m.id}"><span>${b.icon}</span> ${b.label} <b>+${b.pts}</b></button>`).join('')}</div></details>
-      <details class="panel food"><summary>🍲 ماذا أكل اليوم؟${eaten[m.id] ? ` <small>${Object.keys(eaten[m.id]).map(f => FOOD[f]?.icon||'').join('')}</small>` : ''}</summary>
-        <div class="grid2">${FOODS.map(f => `<button class="${eaten[m.id]?.[f.id]?'on':''}" data-food="${f.id}" data-who="${m.id}">${f.icon} ${f.label}</button>`).join('')}</div></details>
-      <div class="row"><span>⭐ نقاط اليوم: <b>${x.points}</b> · 🤢 متوسط الكراهة: <b>${avg}</b></span>
-        <button class="undo" data-undo="${m.id}">↩️ تراجع</button></div>
-    </div>`;}).join('')}
+    <div class="card"><h3>🏁 سباق الشهر</h3>
+      <div class="race">${race.map((m,i) => `<div class="r ${i===0 && m.points ? 'p1' : ''}">
+        <div class="ra">${avatarHTML(m)}</div><div>${esc(m.short)}</div>
+        <div class="pts">${m.points}</div><div class="bar" style="height:${6 + Math.round(34*m.points/top)}px"></div></div>`).join('')}</div></div>
+    <div class="hint">👇 اضغط على صاحب الغاز لتسجيله</div>
+    <div class="tiles">${MEMBERS.map(m => {
+      const x = s[m.id], str = currentStreak(m.id);
+      return `<button class="tile" data-open="${m.id}">
+        <span class="avatar">${avatarHTML(m)}</span>
+        <span class="tn">${esc(m.name)}</span>
+        <span class="tcount"><b>${x.count}</b> غاز اليوم</span>
+        <span class="tsub">⭐ ${ms[m.id].points} نقطة هذا الشهر${str>1 ? ` · 🔥${str}` : ''}</span>
+        <span class="tap">💨 سجّل</span></button>`;}).join('')}</div>
     <div class="card"><h3>🗳️ صوّتوا على الرائحة الحقيقية</h3>
+      <div class="me" style="margin-bottom:10px"><b>أنا:</b>
+        ${MEMBERS.map(m => `<button class="chip ${me===m.id?'on':''}" data-me="${m.id}">${small(m)} ${esc(m.short)}</button>`).join('')}</div>
       <div class="muted" style="margin-bottom:8px">صاحب الغاز يقيّم نفسه، وباقي العائلة تصوّت. النقاط تُحسب على متوسط الأصوات حتى لا يغشّ أحد 😏</div>
       <div class="feed">${feed.length ? feed.map(e => {
         const m = MEM[e.who], t = new Date(e.t), my = e.votes?.[me], nv = Object.keys(e.votes||{}).filter(k => k!==e.who && MEM[k]).length;
         return `<div class="it"><div>${small(m)} <b>${esc(m.name)}</b> <span class="muted">${pad(t.getHours())}:${pad(t.getMinutes())}</span></div>
           <div>قال ${LEVELS[e.stink-1].icon} ← النتيجة ${LEVELS[effStink(e)-1].icon}</div>
-          <div class="votes">${!me ? '<span class="muted">اختر اسمك فوق لتصوّت</span>' : me===e.who ? '<span class="muted">لا يمكنك التصويت على غازك 😇</span>' :
+          <div class="votes">${!me ? '<span class="muted">اختر اسمك («أنا») لتصوّت</span>' : me===e.who ? '<span class="muted">لا يمكنك التصويت على غازك 😇</span>' :
             'صوتك: ' + LEVELS.map(l => `<button class="${my===l.v?'on':''}" data-vote="${e.id}" data-day="${e.day}" data-v2="${l.v}" title="${l.label}">${l.icon}</button>`).join('')}
             <span class="muted">(${nv} أصوات)</span></div></div>`;
       }).join('') : '<div class="muted">لا غازات بعد اليوم... الهدوء الذي يسبق العاصفة 🌪️</div>'}</div></div>`;
+}
+
+let sheetFor = null;
+function renderSheet(){
+  const el = $('sheet');
+  if(!sheetFor){ el.innerHTML = ''; return; }
+  const m = MEM[sheetFor], today = dayKey(new Date()), x = stats(e => e.day === today)[m.id];
+  const eaten = {}; EVENTS.filter(e => e.day===today && e.kind==='food' && e.who===m.id).forEach(e => eaten[e.food] = 1);
+  const avg = x.count ? (x.gasPoints/x.count).toFixed(1) : '—';
+  const keepScroll = el.querySelector('.sheet')?.scrollTop || 0, fresh = !el.innerHTML;
+  el.innerHTML = `<div class="sheet-bg" data-closesheet="1"></div>
+    <div class="sheet${fresh ? '' : ' noanim'}" role="dialog" aria-label="${esc(m.name)}"><div class="sheet-in">
+      <div class="grab"></div>
+      <div class="member">
+        <button class="avatar" data-photo="${m.id}" title="غيّر الصورة">${avatarHTML(m)}<span class="cam">📷</span></button>
+        <div><div class="name">${esc(m.name)}</div><div class="role">${esc(m.role)} · ⭐ ${x.points} نقطة اليوم · 🤢 ${avg}</div></div>
+        <div class="count" id="sheetcount"><b>${x.count}</b><small>غاز اليوم</small></div>
+      </div>
+      <h4>💨 ما درجة كراهة الرائحة؟</h4>
+      <div class="stink">${LEVELS.map(l => `<button data-who="${m.id}" data-v="${l.v}" title="${l.label}"><span>${l.icon}</span><em>${l.label}</em></button>`).join('')}</div>
+      <h4>⭐ نقاط إضافية</h4>
+      <div class="grid2">${BONUSES.map(b => `<button data-bonus="${b.id}" data-who="${m.id}"><span>${b.icon}</span> ${b.label} <b>+${b.pts}</b></button>`).join('')}</div>
+      <h4>🍲 ماذا أكل اليوم؟</h4>
+      <div class="grid2">${FOODS.map(f => `<button class="${eaten[f.id]?'on':''}" data-food="${f.id}" data-who="${m.id}">${f.icon} ${f.label}</button>`).join('')}</div>
+      <div class="sbtns"><button class="undo" data-undo="${m.id}">↩️ تراجع عن آخر تسجيل</button><button class="btn" data-closesheet="1">✔️ تم</button></div>
+    </div></div>`;
+  el.querySelector('.sheet').scrollTop = keepScroll;
 }
 
 function chartSVG(k){
@@ -481,6 +557,8 @@ function renderHistory(){
       <div><span>🥈 الثاني</span><span class="title">${TITLES[1]}</span></div><div class="prize">🎁 ${PRIZES[1]}</div>
       <div><span>🥉 الثالث</span><span class="title">${TITLES[2]}</span></div><div class="prize">🎁 ${PRIZES[2]}</div>
       <div><span>😇 الأخير</span><span class="title">🐣 المبتدئ الخجول</span></div><div class="prize punish">⚠️ عقوبة: ${PUNISH}</div></div>`;
+  const rules = `<div class="card rules"><h3>📜 القوانين</h3>
+      النقاط = درجة كراهة الرائحة 🤢 (بعد تصويت العائلة) × مضاعف تحدي اليوم ⚔️<br>⭐ ونقاط إضافية للإنجازات الخاصة<br>صاحب أكثر نقاط في الشهر يُتوَّج ☢️ ملك النووي 🏆</div>`;
   const install = `<div class="card"><h3>📲 ضعه على شاشة الهاتف</h3>
       <div><b>آيفون:</b> افتح الرابط في Safari ← زر المشاركة ⬆️ ← «إضافة إلى الشاشة الرئيسية».</div>
       <div style="margin-top:6px"><b>أندرويد:</b> افتح الرابط في Chrome ← القائمة ⋮ ← «إضافة إلى الشاشة الرئيسية».</div></div>`;
@@ -490,7 +568,7 @@ function renderHistory(){
     <div class="card tablewrap"><table><tr><th>الشهر</th><th>☢️ ملك النووي</th><th>النقاط</th><th></th></tr>
       ${keys.map(k => { const w = winnerOf(k); return w ? `<tr><td>${monthName(k)}</td><td>${small(w)} ${esc(w.name)}</td><td class="num">${w.points}</td>
         <td><button class="btn small" data-celebrate="${k}">🎉</button> <button class="btn small" data-cert="${k}">📜</button></td></tr>` : ''; }).join('')}</table></div>`
-    : `<div class="card note">لا يوجد أبطال بعد 🤷<br>أول ☢️ ملك النووي يُتوَّج في نهاية هذا الشهر 🏆</div>`) + install;
+    : `<div class="card note">لا يوجد أبطال بعد 🤷<br>أول ☢️ ملك النووي يُتوَّج في نهاية هذا الشهر 🏆</div>`) + rules + install;
 }
 
 /* ============ EFFECTS ============ */
@@ -631,7 +709,7 @@ document.addEventListener('click', ev => {
     flyText(ev.clientX, ev.clientY, ['💨', ['بررررت!','بوووف!','فسسس...','بااام!','پرررر!'][Math.floor(Math.random()*5)], ...Array(v).fill('💨')]);
     fart(v); toast(`${m.name}: ${LEVELS[v-1].label} ${LEVELS[v-1].icon}`);
     const lines = COMMENTS[v]; announce(lines[Math.floor(Math.random()*lines.length)].replace('{n}', m.name));
-    document.querySelector(`#card-${m.id} .count`)?.classList.add('bump');
+    [$('sheetcount'), document.querySelector(`.tile[data-open="${m.id}"] .tcount`)].forEach(e => e?.classList.add('bump'));
     if(v >= 4) shake();
     return;
   }
@@ -648,7 +726,6 @@ document.addEventListener('click', ev => {
     const ex = EVENTS.find(e => e.day===day && e.kind==='food' && e.who===m.id && e.food===f.id);
     if(ex) patchEvent(day, ex.id, null);
     else { record({who:m.id, kind:'food', food:f.id}); toast(`${f.icon} ${m.name} أكل ${f.label}... انتبهوا! 😨`); }
-    setTimeout(() => { const d = document.querySelector(`#card-${m.id} details.food`); if(d) d.open = true; }, 0);
     return;
   }
   if(b = q('[data-vote]')){
@@ -656,6 +733,8 @@ document.addEventListener('click', ev => {
     patchEvent(b.dataset.day, b.dataset.vote, {votes:{[me]: +b.dataset.v2}});
     toast('تم احتساب صوتك 🗳️'); return;
   }
+  if(b = q('[data-closesheet]')){ sheetFor = null; renderSheet(); return; }
+  if(q('[data-photo]') === null && (b = q('[data-open]'))){ sheetFor = b.dataset.open; renderSheet(); return; }
   if(b = q('[data-me]')){ me = b.dataset.me; ls.set('gas-me', me); renderAll(); return; }
   if(b = q('[data-photo]')){ photoFor = b.dataset.photo; $('photo').click(); return; }
   if(b = q('[data-undo]')){
@@ -675,6 +754,7 @@ document.addEventListener('click', ev => {
     renderAll();
   }
 });
+document.addEventListener('keydown', ev => { if(ev.key === 'Escape' && sheetFor){ sheetFor = null; renderSheet(); } });
 document.addEventListener('change', ev => { if(ev.target.id === 'monthsel'){ monthSel = ev.target.value; renderAll(); } });
 
 /* ============ BOOT ============ */
