@@ -1,34 +1,40 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#c8f169"/>
-  <g fill="#a6e04a"><circle cx="70" cy="90" r="34"/><circle cx="450" cy="420" r="40"/><circle cx="440" cy="110" r="22"/><circle cx="80" cy="440" r="20"/></g>
-  <!-- small puffs trailing -->
-  <g stroke="#2a1a3b" stroke-width="12" fill="#ffd23f">
-    <circle cx="96" cy="392" r="30"/><circle cx="58" cy="436" r="18"/>
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="45%" r="70%"><stop offset="0" stop-color="#dcff8a"/><stop offset="1" stop-color="#9fdc3f"/></radialGradient>
+    <clipPath id="sq"><rect width="512" height="512" rx="112"/></clipPath>
+    <linearGradient id="cl" gradientUnits="userSpaceOnUse" x1="0" y1="150" x2="0" y2="450"><stop offset="0" stop-color="#a07bff"/><stop offset="1" stop-color="#6d3ff0"/></linearGradient>
+  </defs>
+  <g clip-path="url(#sq)">
+    <rect width="512" height="512" fill="url(#bg)"/>
+    <g fill="#ffffff" opacity=".28"><path d="M256 256 L653 207 L653 305Z"/><path d="M256 256 L624 412 L575 497Z"/><path d="M256 256 L497 575 L412 624Z"/><path d="M256 256 L305 653 L207 653Z"/><path d="M256 256 L100 624 L15 575Z"/><path d="M256 256 L-63 497 L-112 412Z"/><path d="M256 256 L-141 305 L-141 207Z"/><path d="M256 256 L-112 100 L-63 15Z"/><path d="M256 256 L15 -63 L100 -112Z"/><path d="M256 256 L207 -141 L305 -141Z"/><path d="M256 256 L412 -112 L497 -63Z"/><path d="M256 256 L575 15 L624 100Z"/></g>
   </g>
-  <!-- cloud: outline pass then fill pass so inner seams vanish -->
+  <!-- stink waves -->
+  <g fill="none" stroke="#3f9b2e" stroke-width="13" stroke-linecap="round">
+    <path d="M150 150 q-18 -22 0 -44 q18 -22 0 -44"/>
+    <path d="M206 128 q-16 -20 0 -40 q16 -20 0 -40"/>
+  </g>
+  <!-- trailing puffs -->
+  <g stroke="#2a1a3b" stroke-width="12" fill="#ffd23f"><circle cx="92" cy="400" r="28"/><circle cx="52" cy="446" r="16"/></g>
+  <!-- cloud: ink pass, fill pass -->
   <g transform="rotate(-6 260 300)">
-    <g fill="#2a1a3b">
-      <circle cx="170" cy="310" r="86"/><circle cx="260" cy="250" r="104"/><circle cx="352" cy="300" r="90"/>
-      <circle cx="300" cy="372" r="76"/><circle cx="210" cy="378" r="72"/>
-    </g>
-    <g fill="#8a5cf6">
-      <circle cx="170" cy="310" r="72"/><circle cx="260" cy="250" r="90"/><circle cx="352" cy="300" r="76"/>
-      <circle cx="300" cy="372" r="62"/><circle cx="210" cy="378" r="58"/>
-    </g>
-    <ellipse cx="225" cy="205" rx="40" ry="20" fill="#b49cff" transform="rotate(-25 225 205)"/>
-    <!-- squinting eyes -->
-    <g fill="none" stroke="#2a1a3b" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M196 276 l34 18 l-34 18"/><path d="M330 276 l-34 18 l34 18"/>
-    </g>
-    <!-- cheeks -->
-    <g fill="#ff6fae"><ellipse cx="186" cy="336" rx="22" ry="13"/><ellipse cx="342" cy="336" rx="22" ry="13"/></g>
-    <!-- mouth with tongue -->
-    <path d="M222 336 q41 58 82 0 z" fill="#2a1a3b"/>
-    <path d="M246 352 q17 30 34 0 q-17 -10 -34 0z" fill="#ff6fae"/>
+    <g fill="#2a1a3b"><circle cx="168" cy="312" r="88"/><circle cx="260" cy="250" r="106"/><circle cx="354" cy="304" r="90"/><circle cx="302" cy="376" r="78"/><circle cx="208" cy="380" r="74"/></g>
+    <g fill="url(#cl)"><circle cx="168" cy="312" r="74"/><circle cx="260" cy="250" r="92"/><circle cx="354" cy="304" r="76"/><circle cx="302" cy="376" r="64"/><circle cx="208" cy="380" r="60"/></g>
+    <ellipse cx="222" cy="200" rx="44" ry="20" fill="#c9b3ff" transform="rotate(-25 222 200)"/>
+    <circle cx="300" cy="186" r="9" fill="#c9b3ff"/>
+    <g fill="none" stroke="#2a1a3b" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"><path d="M194 278 l36 19 l-36 19"/><path d="M332 278 l-36 19 l36 19"/></g>
+    <g fill="#ff6fae"><ellipse cx="182" cy="340" rx="24" ry="14"/><ellipse cx="346" cy="340" rx="24" ry="14"/></g>
+    <path d="M218 338 q45 66 90 0 z" fill="#2a1a3b"/>
+    <path d="M244 358 q19 34 38 0 q-19 -11 -38 0z" fill="#ff6fae"/>
   </g>
   <!-- crown -->
-  <g transform="rotate(14 330 120)" stroke="#2a1a3b" stroke-width="12" stroke-linejoin="round">
-    <path d="M262 150 L250 72 L294 108 L330 58 L364 108 L408 72 L396 150 Z" fill="#ffd23f"/>
-    <g fill="#ff6fae" stroke-width="8"><circle cx="250" cy="70" r="11"/><circle cx="330" cy="56" r="11"/><circle cx="408" cy="70" r="11"/></g>
+  <g transform="rotate(14 330 112)" stroke="#2a1a3b" stroke-width="12" stroke-linejoin="round">
+    <path d="M258 146 L246 66 L292 104 L330 52 L366 104 L412 66 L400 146 Z" fill="#ffd23f"/>
+    <path d="M266 128 L392 128" stroke="#e0a800" stroke-width="8"/>
+    <g fill="#ff6fae" stroke-width="8"><circle cx="246" cy="64" r="11"/><circle cx="330" cy="50" r="12"/><circle cx="412" cy="64" r="11"/></g>
+  </g>
+  <!-- nuclear badge -->
+  <g transform="translate(410 418) scale(.82) translate(-388 -392) rotate(-10 388 392)">
+    <circle cx="388" cy="392" r="62" fill="#ffd23f" stroke="#2a1a3b" stroke-width="12"/>
+    <g fill="#2a1a3b"><path d="M381.5 380.7 L368.0 357.4 A40 40 0 0 1 408.0 357.4 L394.5 380.7 A13 13 0 0 0 381.5 380.7Z"/><path d="M401.0 392.0 L428.0 392.0 A40 40 0 0 1 408.0 426.6 L394.5 403.3 A13 13 0 0 0 401.0 392.0Z"/><path d="M381.5 403.3 L368.0 426.6 A40 40 0 0 1 348.0 392.0 L375.0 392.0 A13 13 0 0 0 381.5 403.3Z"/><circle cx="388" cy="392" r="8"/></g>
   </g>
 </svg>
