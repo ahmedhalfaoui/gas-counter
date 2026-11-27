@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#c8f169"/>
+  <g fill="#a6e04a"><circle cx="70" cy="90" r="34"/><circle cx="450" cy="420" r="40"/><circle cx="440" cy="110" r="22"/><circle cx="80" cy="440" r="20"/></g>
+  <!-- small puffs trailing -->
+  <g stroke="#2a1a3b" stroke-width="12" fill="#ffd23f">
+    <circle cx="96" cy="392" r="30"/><circle cx="58" cy="436" r="18"/>
+  </g>
+  <!-- cloud: outline pass then fill pass so inner seams vanish -->
+  <g transform="rotate(-6 260 300)">
+    <g fill="#2a1a3b">
+      <circle cx="170" cy="310" r="86"/><circle cx="260" cy="250" r="104"/><circle cx="352" cy="300" r="90"/>
+      <circle cx="300" cy="372" r="76"/><circle cx="210" cy="378" r="72"/>
+    </g>
+    <g fill="#8a5cf6">
+      <circle cx="170" cy="310" r="72"/><circle cx="260" cy="250" r="90"/><circle cx="352" cy="300" r="76"/>
+      <circle cx="300" cy="372" r="62"/><circle cx="210" cy="378" r="58"/>
+    </g>
+    <ellipse cx="225" cy="205" rx="40" ry="20" fill="#b49cff" transform="rotate(-25 225 205)"/>
+    <!-- squinting eyes -->
+    <g fill="none" stroke="#2a1a3b" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M196 276 l34 18 l-34 18"/><path d="M330 276 l-34 18 l34 18"/>
+    </g>
+    <!-- cheeks -->
+    <g fill="#ff6fae"><ellipse cx="186" cy="336" rx="22" ry="13"/><ellipse cx="342" cy="336" rx="22" ry="13"/></g>
+    <!-- mouth with tongue -->
+    <path d="M222 336 q41 58 82 0 z" fill="#2a1a3b"/>
+    <path d="M246 352 q17 30 34 0 q-17 -10 -34 0z" fill="#ff6fae"/>
+  </g>
+  <!-- crown -->
+  <g transform="rotate(14 330 120)" stroke="#2a1a3b" stroke-width="12" stroke-linejoin="round">
+    <path d="M262 150 L250 72 L294 108 L330 58 L364 108 L408 72 L396 150 Z" fill="#ffd23f"/>
+    <g fill="#ff6fae" stroke-width="8"><circle cx="250" cy="70" r="11"/><circle cx="330" cy="56" r="11"/><circle cx="408" cy="70" r="11"/></g>
+  </g>
+</svg>

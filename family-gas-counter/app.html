@@ -1,0 +1,713 @@
+<meta charset="utf-8">
+<title>عدّاد غازات العائلة</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="artifact-thumbnail" href="thumb.png">
+<link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link href="https://fonts.googleapis.com/css2?family=Marhey:wght@400;700&family=Lalezar&display=swap" rel="stylesheet">
+<style>
+/* Cartoon "gas lab": lime ground, cream sticker cards with thick ink outlines and hard shadows */
+:root{--bg:#c8f169;--bg2:#a6e04a;--card:#fffbe8;--ink:#2a1a3b;--muted:#6b5a7a;--pink:#ff6fae;--yellow:#ffd23f;--purple:#8a5cf6;--green:#5fd068;--blue:#7fd3ff;--orange:#ffa94d;--white:#fff;--red:#ffe0e0;--prizeTxt:#c2185b;
+  --c-louay:#d99a00;--c-dad:#e0457b;--c-mom:#1f8fd0;--c-abdelkader:#e8700f;
+  --display:Lalezar,Marhey,"Arial Black",sans-serif;--body:Marhey,system-ui,"Segoe UI",sans-serif;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font-family:var(--body);min-height:100vh;background:var(--bg) radial-gradient(circle at 20% 30%,var(--bg2) 0 40px,transparent 41px) 0 0/140px 140px;overflow-x:hidden}
+.app{max-width:640px;margin:0 auto;padding-block:16px 100px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{text-align:center;padding:10px 0 0;position:relative}
+h1{margin:0;font-family:var(--display);font-weight:400;font-size:2.6rem;line-height:1.1;color:var(--yellow);-webkit-text-stroke:2px var(--ink);text-shadow:4px 4px 0 var(--ink);transform:rotate(-3deg);display:inline-block;animation:wobble 3s ease-in-out infinite}
+.sub{margin:10px 0 0;font-weight:700;background:var(--pink);color:var(--white);display:inline-block;padding:4px 14px;border:3px solid var(--ink);border-radius:999px;transform:rotate(2deg);box-shadow:3px 3px 0 var(--ink)}
+.clouds{font-size:1.8rem;position:absolute;top:0;animation:float 4s ease-in-out infinite}
+.logo{position:absolute;top:-4px;left:0;width:58px;height:58px;transform:rotate(-8deg);filter:drop-shadow(3px 3px 0 var(--ink));animation:float 4s ease-in-out infinite}.clouds.r{right:0;animation-delay:-2s}
+@keyframes wobble{50%{transform:rotate(3deg) scale(1.04)}}
+@keyframes float{50%{transform:translateY(-10px) rotate(15deg)}}
+.status{text-align:center;font-size:.8rem;margin-top:10px}
+.status span{background:var(--card);border:2px solid var(--ink);border-radius:999px;padding:2px 10px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:18px 0 16px}
+.tabs button{border:3px solid var(--ink);background:var(--card);padding:9px 2px;border-radius:14px;font:inherit;font-weight:700;font-size:.85rem;color:var(--ink);cursor:pointer;box-shadow:3px 3px 0 var(--ink)}
+.tabs button:nth-child(odd){transform:rotate(-1.5deg)}.tabs button:nth-child(even){transform:rotate(1.5deg)}
+.tabs button.on{background:var(--purple);color:var(--white);transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.card{background:var(--card);border:3px solid var(--ink);border-radius:24px 18px 26px 16px;padding:16px;margin-bottom:16px;box-shadow:6px 6px 0 var(--ink)}
+.card h3{margin:0 0 10px;font-family:var(--display);font-weight:400;font-size:1.35rem}
+.card.m0{transform:rotate(-1deg)}.card.m1{transform:rotate(1deg)}.card.m2{transform:rotate(-.6deg)}.card.m3{transform:rotate(.8deg)}
+.challenge{background:var(--purple);color:var(--white);transform:rotate(-1deg)}
+.challenge b{font-family:var(--display);font-weight:400;font-size:1.3rem}
+.me{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chip{border:2px solid var(--ink);background:var(--white);border-radius:999px;padding:3px 10px;font:inherit;font-size:.8rem;color:var(--ink);cursor:pointer}
+.chip.on{background:var(--yellow);font-weight:700;box-shadow:2px 2px 0 var(--ink)}
+.member{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
+.avatar{font-size:2.6rem;width:66px;height:66px;display:grid;place-items:center;border-radius:50%;border:3px solid var(--ink);background:var(--yellow);box-shadow:3px 3px 0 var(--ink);overflow:hidden;cursor:pointer;padding:0;position:relative}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.avatar .cam{position:absolute;bottom:-2px;left:-2px;font-size:.9rem;background:var(--white);border-radius:50%;border:2px solid var(--ink);width:22px;height:22px;display:grid;place-items:center}
+.m1 .avatar{background:var(--pink)}.m2 .avatar{background:var(--blue)}.m3 .avatar{background:var(--orange)}
+.name{font-family:var(--display);font-size:1.45rem;line-height:1.2}
+.role{font-size:.85rem;color:var(--muted)}
+.count{text-align:center;background:var(--green);border:3px solid var(--ink);border-radius:50%;width:74px;height:74px;display:grid;place-content:center;transform:rotate(8deg);box-shadow:3px 3px 0 var(--ink)}
+.count b{font-family:var(--display);font-weight:400;font-size:2rem;line-height:1}
+.count small{font-size:.65rem;font-weight:700}
+.bump{animation:bump .4s}
+@keyframes bump{40%{transform:scale(1.35) rotate(-10deg)}}
+.stink{display:flex;gap:6px;margin-top:14px}
+.stink button{flex:1;min-width:0;border:3px solid var(--ink);background:var(--white);border-radius:14px;padding:6px 2px;font:inherit;cursor:pointer;color:var(--ink);box-shadow:3px 3px 0 var(--ink);transition:transform .08s}
+.stink button:nth-child(1){background:#e9ffd6}.stink button:nth-child(2){background:#fff4b8}.stink button:nth-child(3){background:#ffd8a8}.stink button:nth-child(4){background:#d8f5a2}.stink button:nth-child(5){background:#c9b6ff}
+.stink button:hover{transform:rotate(-4deg) scale(1.06)}
+.stink button:active{transform:translate(3px,3px);box-shadow:none}
+.stink button span{display:block;font-size:1.6rem}
+.stink button em{font-style:normal;font-size:.7rem;font-weight:700}
+details.panel{margin-top:10px;border:3px solid var(--ink);border-radius:14px;padding:6px 10px;box-shadow:3px 3px 0 var(--ink)}
+details.bonus{background:var(--blue)}details.food{background:var(--orange)}
+details.panel summary{cursor:pointer;font-weight:700}
+details.panel small{font-weight:400}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0 4px}
+.grid2 button{border:2px solid var(--ink);background:var(--white);border-radius:10px;padding:6px 4px;font:inherit;font-size:.75rem;color:var(--ink);cursor:pointer;line-height:1.4}
+.grid2 button:active{transform:scale(.94)}
+.grid2 button.on{background:var(--yellow);font-weight:700}
+.grid2 b{color:var(--prizeTxt);white-space:nowrap;direction:ltr;unicode-bidi:isolate}
+.row{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;margin-top:12px;gap:8px;flex-wrap:wrap}
+.undo{border:2px dashed var(--ink);background:none;color:var(--ink);font:inherit;cursor:pointer;font-size:.8rem;border-radius:10px;padding:2px 10px}
+.feed{display:grid;gap:8px}
+.feed .it{display:grid;grid-template-columns:1fr auto;gap:4px 8px;align-items:center;border-bottom:2px dashed #2a1a3b33;padding-bottom:8px}
+.feed .votes{grid-column:1/-1;display:flex;gap:4px;align-items:center;flex-wrap:wrap;font-size:.75rem}
+.feed .votes button{border:2px solid var(--ink);background:var(--white);border-radius:8px;font-size:1rem;padding:0 4px;cursor:pointer}
+.feed .votes button.on{background:var(--yellow)}
+.muted{color:var(--muted);font-size:.8rem}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px 6px;text-align:right;border-bottom:2px dashed #2a1a3b33}
+th{font-size:.8rem;color:var(--muted)}
+td.num{font-family:var(--display);font-size:1.3rem;font-variant-numeric:tabular-nums}
+.crown{background:var(--yellow);text-align:center;transform:rotate(-1.5deg)}
+.crown .big{font-size:3.4rem;animation:wobble 1.5s ease-in-out infinite;display:inline-block}
+.crown h2{margin:0;font-family:var(--display);font-weight:400;font-size:2rem}
+.title{display:inline-block;margin-top:4px;white-space:nowrap;font-size:.68rem;font-weight:700;background:var(--yellow);border:2px solid var(--ink);border-radius:999px;padding:0 8px;transform:rotate(-2deg)}
+.titles{display:grid;gap:8px}
+.titles>div{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.prize{margin-top:10px;background:var(--white);border:3px dashed var(--ink);border-radius:14px;padding:8px;font-weight:700;font-size:.85rem;display:block!important;text-align:center;transform:rotate(1deg)}
+.prize.punish{background:var(--red)}
+.note{text-align:center;font-size:.85rem;background:var(--card);border:3px solid var(--ink);border-radius:16px;padding:10px;box-shadow:4px 4px 0 var(--ink);transform:rotate(1deg)}
+.chart svg{width:100%;height:auto;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:.75rem;margin-top:6px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;border:2px solid var(--ink);vertical-align:middle;margin-left:4px}
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}
+.statgrid div{background:var(--white);border:2px solid var(--ink);border-radius:12px;padding:6px;text-align:center;font-size:.7rem}
+.statgrid b{display:block;font-family:var(--display);font-weight:400;font-size:1.25rem}
+.badges{display:flex;flex-wrap:wrap;gap:6px}
+.badge{font-size:.7rem;border:2px solid var(--ink);border-radius:10px;padding:3px 8px;background:var(--yellow);font-weight:700}
+.badge.locked{background:transparent;opacity:.4;filter:grayscale(1);font-weight:400}
+.btn{border:3px solid var(--ink);background:var(--yellow);border-radius:12px;padding:6px 12px;font:inherit;font-weight:700;color:var(--ink);cursor:pointer;box-shadow:3px 3px 0 var(--ink)}
+.btn.small{padding:2px 8px;font-size:.75rem;border-width:2px;box-shadow:2px 2px 0 var(--ink)}
+.announcer{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%) translateY(-200%);width:min(92vw,560px);background:var(--ink);color:var(--yellow);border:3px solid var(--yellow);border-radius:16px;padding:10px 14px;font-weight:700;z-index:20;transition:transform .3s cubic-bezier(.5,1.6,.5,1);text-align:center}
+.announcer.show{transform:translateX(-50%) translateY(0)}
+.toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%) scale(0);background:var(--pink);color:var(--white);border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:10px 20px;border-radius:20px;transition:.25s cubic-bezier(.5,2,.5,1);pointer-events:none;font-family:var(--display);font-size:1.2rem;white-space:nowrap;z-index:9;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
+.toast.show{transform:translateX(-50%) scale(1) rotate(-3deg)}
+.puff{position:fixed;pointer-events:none;font-family:var(--display);font-size:1.8rem;color:var(--purple);-webkit-text-stroke:1px var(--ink);animation:puff 1.3s ease-out forwards;z-index:8;white-space:nowrap}
+@keyframes puff{to{transform:translate(var(--dx),-160px) scale(2) rotate(var(--r));opacity:0}}
+.shake{animation:shake .4s}
+@keyframes shake{20%{transform:translateX(-6px) rotate(-1deg)}40%{transform:translateX(6px) rotate(1deg)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+select{font:inherit;padding:6px 10px;border-radius:12px;border:3px solid var(--ink);background:var(--white);color:var(--ink)}
+.sound{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));right:calc(16px + env(safe-area-inset-right,0px));width:52px;height:52px;border-radius:50%;border:3px solid var(--ink);background:var(--yellow);font-size:1.5rem;box-shadow:3px 3px 0 var(--ink);cursor:pointer;z-index:9}
+.overlay{position:fixed;inset:0;background:#2a1a3bcc;z-index:30;display:grid;place-items:center;padding:16px;overflow:auto}
+.overlay .card{max-width:440px;width:100%;text-align:center;transform:none}
+.overlay img{max-width:100%;border:3px solid var(--ink);border-radius:12px}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:31}
+button:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--purple);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="app" dir="rtl" lang="ar">
+  <header>
+    <img class="logo" src="icon.svg" alt=""><span class="clouds r">💨</span>
+    <h1>عدّاد الغازات<br>العائلي</h1><br>
+    <p class="sub">من سيكون ملك النووي هذا الشهر؟ ☢️👑</p>
+    <div class="status" id="status"></div>
+  </header>
+
+  <nav class="tabs">
+    <button data-tab="today" class="on">اليوم</button>
+    <button data-tab="month">الترتيب</button>
+    <button data-tab="stats">الإحصائيات</button>
+    <button data-tab="history">الأبطال</button>
+  </nav>
+
+  <section id="today"></section>
+  <section id="month" hidden></section>
+  <section id="stats" hidden></section>
+  <section id="history" hidden></section>
+
+  <p class="note">النقاط = درجة كراهة الرائحة 🤢 (بعد تصويت العائلة) × مضاعف تحدي اليوم<br>⭐ ونقاط إضافية للإنجازات الخاصة<br>صاحب أكثر نقاط في الشهر يفوز 🏆</p>
+
+  <div class="toast" id="toast"></div>
+  <div class="announcer" id="announcer"></div>
+  <button class="sound" id="sound" title="الصوت والمذيع">🔊</button>
+  <input type="file" id="photo" accept="image/*" hidden>
+  <div id="overlay"></div>
+</div>
+<canvas id="confetti" hidden></canvas>
+
+<script>
+/* ============ CONFIG ============ */
+const MEMBERS = [
+  {id:'louay', name:'لؤي زكروط', role:'الإبن', avatar:'👦'},
+  {id:'dad', name:'بن يحي Bois Dur', role:'الأب', avatar:'🧔‍♂️'},
+  {id:'mom', name:'حفيظة حشحوشة', role:'الأم', avatar:'👩'},
+  {id:'abdelkader', name:'عبد القادر', role:'الإبن', avatar:'🧑'}
+];
+const MEM = Object.fromEntries(MEMBERS.map(m => [m.id, m]));
+const LEVELS = [
+  {v:1, icon:'🙂', label:'خفيف'}, {v:2, icon:'😐', label:'مقبول'}, {v:3, icon:'😖', label:'كريه'},
+  {v:4, icon:'🤢', label:'مقرف'}, {v:5, icon:'☠️', label:'قاتل'}
+];
+const BONUSES = [
+  {id:'toilet', icon:'🚽', label:'سدّ المرحاض', pts:10, fx:['🚽','🪠','💩','بلوووب!']},
+  {id:'guests', icon:'👥', label:'أمام الضيوف', pts:8, fx:['😱','🫣','فضيحة!']},
+  {id:'blanket', icon:'🛏️', label:'تحت البطانية', pts:7, fx:['🛏️','🔥','فرن!']},
+  {id:'car', icon:'🚗', label:'في السيارة والشبابيك مسكّرة', pts:6, fx:['🚗','🪟','اختناق!']},
+  {id:'table', icon:'🍽️', label:'على مائدة الأكل', pts:5, fx:['🍽️','🤮','بالهناء!']},
+  {id:'prayer', icon:'🤫', label:'صامت ولم يُكشف صاحبه', pts:5, fx:['🕵️','❓','مين؟!']},
+  {id:'record', icon:'⏱️', label:'غاز أطول من 5 ثواني', pts:4, fx:['⏱️','بررررررررت!']},
+  {id:'blame', icon:'🙈', label:'اتّهم شخصًا آخر', pts:3, fx:['👉','🙈','مش أنا!']}
+];
+const BONUS = Object.fromEntries(BONUSES.map(b => [b.id, b]));
+const FOODS = [
+  {id:'loubia', icon:'🫘', label:'لوبيا'}, {id:'hummus', icon:'🧆', label:'حمّص'},
+  {id:'onion', icon:'🧅', label:'بصل'}, {id:'garlic', icon:'🧄', label:'ثوم'},
+  {id:'egg', icon:'🥚', label:'بيض'}, {id:'couscous', icon:'🍚', label:'كسكسي'},
+  {id:'chorba', icon:'🍲', label:'شربة'}, {id:'milk', icon:'🥛', label:'حليب'}
+];
+const FOOD = Object.fromEntries(FOODS.map(f => [f.id, f]));
+const TITLES = ['☢️ ملك النووي', '🧪 وزير الأسلحة الكيماوية', '🌪️ قائد الإعصار الصامت'];
+const PRIZES = [
+  '✈️🇮🇷 رحلة إلى إيران لمساعدتهم في السلاح النووي بغازاته ☢️💨',
+  '🥽 قناع غاز ذهبي + إعفاء من غسل الصحون لمدة أسبوع 🍽️',
+  '🫘 صحن لوبيا وحمّص كل يوم لتقوية الأداء في الشهر القادم 💪'
+];
+const PUNISH = '🧴 يرشّ معطّر الجو في كامل البيت كل يوم، ويفتح الشبابيك للجميع طوال الشهر 🪟';
+const CHALLENGES = [
+  {text:'كل غاز ☠️ قاتل نقاطه ×2', mult:e => e.kind==='gas' && e.stink===5 ? 2 : 1},
+  {text:'غازات بعد العشاء (بعد 8 مساءً) نقاطها ×2', mult:e => e.kind==='gas' && new Date(e.t).getHours()>=20 ? 2 : 1},
+  {text:'غازات الصباح (قبل 10 صباحًا) نقاطها ×2', mult:e => e.kind==='gas' && new Date(e.t).getHours()<10 ? 2 : 1},
+  {text:'🚽 سدّ المرحاض اليوم نقاطه ×3', mult:e => e.kind==='bonus' && e.bonus==='toilet' ? 3 : 1},
+  {text:'كل النقاط الإضافية ⭐ اليوم ×2', mult:e => e.kind==='bonus' ? 2 : 1},
+  {text:'يوم النسيم: الغاز 🙂 الخفيف نقاطه ×3', mult:e => e.kind==='gas' && e.stink===1 ? 3 : 1},
+  {text:'يوم الأسلحة الكيماوية: 🤢 المقرف نقاطه ×2', mult:e => e.kind==='gas' && e.stink===4 ? 2 : 1}
+];
+const BADGES = [
+  {id:'first10', icon:'🔟', label:'أول 10 غازات', test:s => s.count>=10},
+  {id:'first100', icon:'💯', label:'أول 100 غاز', test:s => s.count>=100},
+  {id:'killer', icon:'☠️', label:'القاتل المتسلسل (10 غازات قاتلة)', test:s => s.killers>=10},
+  {id:'plumber', icon:'🪠', label:'السبّاك المحترف (سدّ المرحاض 3 مرات)', test:s => s.toilets>=3},
+  {id:'shameless', icon:'👥', label:'بلا حياء (أمام الضيوف 3 مرات)', test:s => s.guests>=3},
+  {id:'owl', icon:'🦉', label:'بومة الليل (10 غازات بعد منتصف الليل)', test:s => s.night>=10},
+  {id:'streak7', icon:'🔥', label:'سلسلة 7 أيام متتالية', test:s => s.bestStreak>=7},
+  {id:'loubia', icon:'🫘', label:'عاشق اللوبيا (5 مرات)', test:s => s.loubia>=5},
+  {id:'king', icon:'👑', label:'ملك متوّج (فاز بشهر)', test:s => s.wins>=1}
+];
+const COMMENTS = {
+  1:['{n} يطلق نسمة ربيعية خفيفة... الجمهور لم يلاحظ شيئًا!','تسديدة ضعيفة من {n}، الحارس يمسكها بسهولة!'],
+  2:['{n} يسجّل هدفًا عاديًا... لا شيء يُذكر يا جماعة.','{n} يحاول، لكن المحاولة متوسطة!'],
+  3:['قذيفة متوسطة المدى من {n}! الجمهور يغطي أنفه!','{n} يُطلق صاروخًا! المدرجات تهتز!'],
+  4:['يا للهول! {n} يطلق سلاحًا كيماويًا! أخلوا الصالة فورًا!','هجوم بيولوجي من {n}! نطلب الأقنعة حالًا!'],
+  5:['كارثة نووية!!! {n} يدمّر الحي بالكامل! نطلب تدخّل الحماية المدنية!','انفجار تاريخي من {n}! هذا الغاز سيُدرَّس في الجامعات!']
+};
+const MONTHS = ['جانفي','فيفري','مارس','أفريل','ماي','جوان','جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+
+/* ============ HELPERS ============ */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2,'0');
+const dayKey = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const monthKey = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}`;
+const monthName = k => { const [y,m] = k.split('-'); return `${MONTHS[+m-1]} ${y}`; };
+const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const ls = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch(e) { return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
+};
+function hash(s){ let h = 0; for(const c of s) h = (h*31 + c.charCodeAt(0)) >>> 0; return h; }
+const challengeFor = day => CHALLENGES[hash(day) % CHALLENGES.length];
+function addDays(key, n){ const [y,m,d] = key.split('-').map(Number); return dayKey(new Date(y, m-1, d+n)); }
+
+/* ============ STATE + STORAGE ============ */
+let DAYS = {};      // { 'YYYY-MM-DD': { ev: { id: event|null } } }
+let PHOTOS = {};    // { memberId: dataURL }
+let me = ls.get('gas-me', null);
+let soundOn = ls.get('gas-sound', 'on') !== 'off';
+let tab = 'today';
+let monthSel = null;
+let backend = null; // 'shared' | 'local'
+let db = null, tts = null, downloads = null;
+
+const LOCAL_KEY = 'family-gas-v2';
+function loadLocal(){
+  const st = ls.get(LOCAL_KEY, null);
+  if(st){ DAYS = st.days || {}; PHOTOS = st.photos || {}; return; }
+  const old = ls.get('family-gas-log-v1', []);   // migrate the first version's log
+  old.forEach((e,i) => {
+    const ev = e.kind === 'toilet' || e.kind === 'bonus'
+      ? {who:e.who, kind:'bonus', bonus:e.bonus || 'toilet', t:e.t, mult:1}
+      : {who:e.who, kind:'gas', stink:e.stink, t:e.t, mult:1};
+    (DAYS[e.day] ||= {ev:{}}).ev['m'+i] = ev;
+  });
+  saveLocal();
+}
+const saveLocal = () => ls.set(LOCAL_KEY, {days:DAYS, photos:PHOTOS});
+
+const queues = {};
+function enqueue(path, fn){
+  const p = (queues[path] || Promise.resolve()).then(fn, fn);
+  queues[path] = p.catch(() => {});
+  return p;
+}
+function writeErr(e){
+  toast(e && e.code === 'quota_exceeded' ? 'الذاكرة المشتركة ممتلئة 😵' : 'لم يُحفظ التسجيل، ليست لديك صلاحية أو انقطع الاتصال');
+}
+async function putEvent(day, id, ev){
+  if(backend === 'local'){ (DAYS[day] ||= {ev:{}}).ev[id] = ev; saveLocal(); renderAll(); return; }
+  (DAYS[day] ||= {ev:{}}).ev[id] = ev; renderAll();   // optimistic
+  const ref = db.doc('days/' + day);
+  return enqueue(ref.path, async () => {
+    try { await ref.update({ev:{[id]:ev}}); }
+    catch(e){
+      if(e && e.code === 'invalid_argument'){
+        try { await ref.set({day, ev:{[id]:ev}}); } catch(e2){ writeErr(e2); }
+      } else writeErr(e);
+    }
+  });
+}
+async function patchEvent(day, id, patch){
+  const cur = DAYS[day]?.ev?.[id];
+  if(patch === null){ if(DAYS[day]) DAYS[day].ev[id] = null; }
+  else if(cur){ if(patch.votes) cur.votes = {...(cur.votes||{}), ...patch.votes}; }
+  if(backend === 'local'){ saveLocal(); renderAll(); return; }
+  renderAll();
+  const ref = db.doc('days/' + day);
+  return enqueue(ref.path, () => ref.update({ev:{[id]:patch}}).catch(writeErr));
+}
+async function setPhoto(mid, url){
+  PHOTOS[mid] = url;
+  if(backend === 'local'){ saveLocal(); renderAll(); return; }
+  renderAll();
+  const ref = db.doc('meta/photos');
+  return enqueue(ref.path, async () => {
+    try { await ref.update({[mid]:url}); }
+    catch(e){ if(e && e.code === 'invalid_argument'){ try { await ref.set({[mid]:url}); } catch(e2){ writeErr(e2); } } else writeErr(e); }
+  });
+}
+
+/* ============ DERIVED DATA ============ */
+let EVENTS = [];
+function rebuild(){
+  EVENTS = [];
+  for(const [day, d] of Object.entries(DAYS)){
+    for(const [id, e] of Object.entries(d?.ev || {})){
+      if(!e || !MEM[e.who]) continue;
+      EVENTS.push({...e, id, day, month: day.slice(0,7)});
+    }
+  }
+  EVENTS.sort((a,b) => a.t - b.t);
+}
+function effStink(e){
+  const vs = Object.entries(e.votes || {}).filter(([k,v]) => MEM[k] && k !== e.who && v>=1 && v<=5).map(([,v]) => v);
+  if(!vs.length) return e.stink;
+  return Math.round((e.stink + vs.reduce((a,b) => a+b, 0)) / (vs.length + 1));
+}
+function points(e){
+  const m = e.mult || 1;
+  if(e.kind === 'gas') return effStink(e) * m;
+  if(e.kind === 'bonus') return (BONUS[e.bonus]?.pts || 0) * m;
+  return 0;
+}
+function blank(){ return {count:0, points:0, gasPoints:0, worst:0, bonus:0, toilets:0, killers:0, guests:0, night:0, loubia:0, hours:Array(24).fill(0)}; }
+function stats(filter){
+  const s = {}; MEMBERS.forEach(m => s[m.id] = blank());
+  EVENTS.filter(filter).forEach(e => {
+    const x = s[e.who];
+    if(e.kind === 'food'){ if(e.food === 'loubia') x.loubia++; return; }
+    const p = points(e); x.points += p;
+    if(e.kind === 'bonus'){ x.bonus++; if(e.bonus==='toilet') x.toilets++; if(e.bonus==='guests') x.guests++; return; }
+    const st = effStink(e);
+    x.count++; x.gasPoints += st; x.worst = Math.max(x.worst, st);
+    if(st === 5) x.killers++;
+    const h = new Date(e.t).getHours(); x.hours[h]++; if(h < 5) x.night++;
+  });
+  return s;
+}
+const ranking = s => MEMBERS.map(m => ({...m, ...s[m.id]})).sort((a,b) => b.points - a.points || b.count - a.count);
+function gasDays(mid){ return new Set(EVENTS.filter(e => e.who===mid && e.kind==='gas').map(e => e.day)); }
+function currentStreak(mid){
+  const d = gasDays(mid); let k = dayKey(new Date());
+  if(!d.has(k)) k = addDays(k, -1);
+  let n = 0; while(d.has(k)){ n++; k = addDays(k, -1); }
+  return n;
+}
+function bestStreak(mid){
+  const days = [...gasDays(mid)].sort(); let best = 0, run = 0, prev = null;
+  days.forEach(k => { run = prev && addDays(prev,1) === k ? run+1 : 1; best = Math.max(best, run); prev = k; });
+  return best;
+}
+function pastMonths(){ const cur = monthKey(new Date()); return [...new Set(EVENTS.map(e => e.month))].filter(k => k < cur).sort().reverse(); }
+function winnerOf(k){ const r = ranking(stats(e => e.month === k)); return r[0].points > 0 ? r[0] : null; }
+function winsCount(){ const w = {}; MEMBERS.forEach(m => w[m.id]=0); pastMonths().forEach(k => { const x = winnerOf(k); if(x) w[x.id]++; }); return w; }
+
+/* ============ RENDER ============ */
+const avatarHTML = (m, big) => PHOTOS[m.id] && /^data:image\//.test(PHOTOS[m.id])
+  ? `<img src="${esc(PHOTOS[m.id])}" alt="${esc(m.name)}">` : m.avatar;
+const small = m => PHOTOS[m.id] && /^data:image\//.test(PHOTOS[m.id])
+  ? `<img src="${esc(PHOTOS[m.id])}" alt="" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;border:1px solid var(--ink);object-fit:cover">` : m.avatar;
+
+function renderAll(){
+  rebuild();
+  ({today:renderToday, month:renderMonth, stats:renderStats, history:renderHistory})[tab]();
+  $('sound').textContent = soundOn ? '🔊' : '🔇';
+}
+
+function renderToday(){
+  const today = dayKey(new Date());
+  const s = stats(e => e.day === today);
+  const ch = challengeFor(today);
+  const eaten = {}; EVENTS.filter(e => e.day===today && e.kind==='food').forEach(e => (eaten[e.who] ||= {})[e.food] = e.id);
+  const feed = EVENTS.filter(e => e.kind==='gas' && e.day >= addDays(today,-1)).slice(-8).reverse();
+  $('today').innerHTML = `
+    <div class="card challenge">⚔️ <b>تحدي اليوم:</b> ${esc(ch.text)}</div>
+    <div class="card"><div class="me"><b>📱 مَن يستعمل هذا الهاتف؟</b>
+      ${MEMBERS.map(m => `<button class="chip ${me===m.id?'on':''}" data-me="${m.id}">${small(m)} ${esc(m.name.split(' ')[0])}</button>`).join('')}</div>
+      <div class="muted" style="margin-top:6px">نحتاجه للتصويت على روائح الآخرين 🗳️</div></div>
+    ${MEMBERS.map((m,i) => {
+      const x = s[m.id], avg = x.count ? (x.gasPoints/x.count).toFixed(1) : '—', str = currentStreak(m.id);
+      return `<div class="card m${i}" id="card-${m.id}">
+      <div class="member">
+        <button class="avatar" data-photo="${m.id}" title="غيّر الصورة">${avatarHTML(m)}<span class="cam">📷</span></button>
+        <div><div class="name">${esc(m.name)}</div><div class="role">${esc(m.role)}${str>1 ? ` · 🔥 ${str} أيام متتالية` : ''}</div></div>
+        <div class="count"><b>${x.count}</b><small>غاز اليوم</small></div>
+      </div>
+      <div class="stink">${LEVELS.map(l => `<button data-who="${m.id}" data-v="${l.v}" title="${l.label}"><span>${l.icon}</span><em>${l.label}</em></button>`).join('')}</div>
+      <details class="panel bonus"><summary>⭐ نقاط إضافية${x.bonus ? ` <small>(${x.bonus} اليوم)</small>` : ''}</summary>
+        <div class="grid2">${BONUSES.map(b => `<button data-bonus="${b.id}" data-who="${m.id}"><span>${b.icon}</span> ${b.label} <b>+${b.pts}</b></button>`).join('')}</div></details>
+      <details class="panel food"><summary>🍲 ماذا أكل اليوم؟${eaten[m.id] ? ` <small>${Object.keys(eaten[m.id]).map(f => FOOD[f]?.icon||'').join('')}</small>` : ''}</summary>
+        <div class="grid2">${FOODS.map(f => `<button class="${eaten[m.id]?.[f.id]?'on':''}" data-food="${f.id}" data-who="${m.id}">${f.icon} ${f.label}</button>`).join('')}</div></details>
+      <div class="row"><span>⭐ نقاط اليوم: <b>${x.points}</b> · 🤢 متوسط الكراهة: <b>${avg}</b></span>
+        <button class="undo" data-undo="${m.id}">↩️ تراجع</button></div>
+    </div>`;}).join('')}
+    <div class="card"><h3>🗳️ صوّتوا على الرائحة الحقيقية</h3>
+      <div class="muted" style="margin-bottom:8px">صاحب الغاز يقيّم نفسه، وباقي العائلة تصوّت. النقاط تُحسب على متوسط الأصوات حتى لا يغشّ أحد 😏</div>
+      <div class="feed">${feed.length ? feed.map(e => {
+        const m = MEM[e.who], t = new Date(e.t), my = e.votes?.[me], nv = Object.keys(e.votes||{}).filter(k => k!==e.who && MEM[k]).length;
+        return `<div class="it"><div>${small(m)} <b>${esc(m.name)}</b> <span class="muted">${pad(t.getHours())}:${pad(t.getMinutes())}</span></div>
+          <div>قال ${LEVELS[e.stink-1].icon} ← النتيجة ${LEVELS[effStink(e)-1].icon}</div>
+          <div class="votes">${!me ? '<span class="muted">اختر اسمك فوق لتصوّت</span>' : me===e.who ? '<span class="muted">لا يمكنك التصويت على غازك 😇</span>' :
+            'صوتك: ' + LEVELS.map(l => `<button class="${my===l.v?'on':''}" data-vote="${e.id}" data-day="${e.day}" data-v2="${l.v}" title="${l.label}">${l.icon}</button>`).join('')}
+            <span class="muted">(${nv} أصوات)</span></div></div>`;
+      }).join('') : '<div class="muted">لا غازات بعد اليوم... الهدوء الذي يسبق العاصفة 🌪️</div>'}</div></div>`;
+}
+
+function chartSVG(k){
+  const [y,mo] = k.split('-').map(Number), n = new Date(y, mo, 0).getDate();
+  const cnt = {}; MEMBERS.forEach(m => cnt[m.id] = Array(n).fill(0));
+  EVENTS.filter(e => e.month===k && e.kind==='gas').forEach(e => cnt[e.who][+e.day.slice(8)-1]++);
+  const max = Math.max(2, ...Object.values(cnt).flat());
+  const W=600,H=230,L=34,R=12,T=12,B=30, xs = i => R + (W-L-R) * (n-1-i)/(n-1), ys = v => T + (H-T-B)*(1 - v/max);
+  const ticks = [0, Math.round(max/2), max];
+  let g = ticks.map(v => `<line x1="${R}" x2="${W-L}" y1="${ys(v)}" y2="${ys(v)}" stroke="#2a1a3b" stroke-opacity=".15" stroke-dasharray="4 4"/><text x="${W-L+6}" y="${ys(v)+4}" font-size="12" fill="#2a1a3b">${v}</text>`).join('');
+  g += [1,10,20,n].map(d => `<text x="${xs(d-1)}" y="${H-8}" font-size="12" fill="#2a1a3b" text-anchor="middle">${d}</text>`).join('');
+  MEMBERS.forEach(m => {
+    const pts = cnt[m.id].map((v,i) => `${xs(i).toFixed(1)},${ys(v).toFixed(1)}`).join(' ');
+    g += `<polyline points="${pts}" fill="none" stroke="var(--c-${m.id})" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="عدد الغازات في كل يوم">${g}</svg>
+    <div class="legend">${MEMBERS.map(m => `<span><i style="background:var(--c-${m.id})"></i>${esc(m.name)}</span>`).join('')}</div>
+    <div class="muted">عدد الغازات في كل يوم من الشهر (اليوم 1 على اليمين)</div>`;
+}
+
+function renderMonth(){
+  const keys = [...new Set([monthKey(new Date()), ...EVENTS.map(e => e.month)])].sort().reverse();
+  if(!keys.includes(monthSel)) monthSel = keys[0];
+  const sel = monthSel, r = ranking(stats(e => e.month === sel)), medals = ['🥇','🥈','🥉'];
+  const leader = r[0].points > 0 ? r[0] : null, live = sel === monthKey(new Date());
+  $('month').innerHTML = `
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b>الشهر</b>
+      <select id="monthsel">${keys.map(k => `<option value="${k}" ${k===sel?'selected':''}>${monthName(k)}</option>`).join('')}</select></div>
+    ${leader ? `<div class="card crown"><div class="big">👑</div><h2>${esc(leader.name)}</h2>
+      <div>${live ? 'مرشّح للقب ☢️ ملك النووي' : '☢️ ملك النووي'} بـ ${leader.points} نقطة</div>
+      <div class="prize">🎁 الجائزة: ${PRIZES[0]}</div>
+      ${!live ? `<div style="margin-top:10px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn" data-celebrate="${sel}">🎉 الاحتفال</button><button class="btn" data-cert="${sel}">📜 الشهادة</button></div>` : ''}</div>` : ''}
+    <div class="card tablewrap"><table>
+      <tr><th></th><th>الاسم واللقب</th><th>💨</th><th>⭐</th><th>النقاط</th><th>أسوأ</th></tr>
+      ${r.map((m,i) => `<tr><td>${m.points ? (medals[i]||'') : ''}</td><td>${small(m)} ${esc(m.name)}${m.points && TITLES[i] ? `<div class="title">${TITLES[i]}</div>` : ''}${m.points && i===r.length-1 ? '<div class="title">🐣 المبتدئ الخجول</div>' : ''}</td>
+        <td class="num">${m.count}</td><td class="num">${m.bonus}</td><td class="num">${m.points}</td><td>${m.worst ? LEVELS[m.worst-1].icon : '—'}</td></tr>`).join('')}
+    </table></div>
+    <div class="card chart"><h3>📈 الغازات يومًا بيوم</h3>${chartSVG(sel)}</div>`;
+}
+
+function renderStats(){
+  const today = dayKey(new Date()), weekStart = addDays(today, -6);
+  const wk = ranking(stats(e => e.day >= weekStart));
+  const all = stats(() => true), wins = winsCount();
+  // food analysis: average points of a person's day when they ate X vs overall
+  const dayPts = {}, ate = {};
+  EVENTS.forEach(e => { const k = e.who+'|'+e.day; if(e.kind==='food'){ (ate[k] ||= new Set()).add(e.food); dayPts[k] ||= 0; } else dayPts[k] = (dayPts[k]||0) + points(e); });
+  const allKeys = Object.keys(dayPts), base = allKeys.length ? allKeys.reduce((a,k) => a+dayPts[k],0)/allKeys.length : 0;
+  const foodRows = FOODS.map(f => { const ks = Object.keys(ate).filter(k => ate[k].has(f.id)); return {...f, n:ks.length, avg: ks.length ? ks.reduce((a,k)=>a+dayPts[k],0)/ks.length : 0}; })
+    .filter(f => f.n).sort((a,b) => b.avg - a.avg);
+  $('stats').innerHTML = `
+    <div class="card" style="background:var(--yellow)"><h3>🗓️ تقرير الأسبوع</h3>
+      ${wk[0].points ? `<div>أخطر واحد في آخر 7 أيام: <b>${small(wk[0])} ${esc(wk[0].name)}</b> بـ ${wk[0].points} نقطة و${wk[0].count} غاز 😷</div>
+      <div class="muted" style="margin-top:6px">${wk.slice(1).map(m => `${esc(m.name)}: ${m.points}`).join(' · ')}</div>` : '<div>أسبوع نظيف... مشبوه جدًا 🤨</div>'}</div>
+    ${MEMBERS.map((m,i) => {
+      const x = all[m.id], peak = x.count ? x.hours.indexOf(Math.max(...x.hours)) : null;
+      const st = {...x, bestStreak: bestStreak(m.id), wins: wins[m.id]};
+      return `<div class="card m${i}"><div class="member" style="grid-template-columns:auto 1fr">
+        <div class="avatar" style="cursor:default">${avatarHTML(m)}</div><div><div class="name">${esc(m.name)}</div><div class="role">${esc(m.role)}</div></div></div>
+        <div class="statgrid">
+          <div><b>${x.count}</b>غاز في المجموع</div>
+          <div><b>${currentStreak(m.id)} 🔥</b>أيام متتالية</div>
+          <div><b>${peak===null ? '—' : pad(peak)+':00'}</b>⏰ ساعة الذروة</div>
+          <div><b>${x.count ? (x.gasPoints/x.count).toFixed(1) : '—'}</b>متوسط الكراهة</div>
+          <div><b>${st.bestStreak}</b>أطول سلسلة</div>
+          <div><b>${'🏆'.repeat(wins[m.id]) || 0}</b>ألقاب</div>
+        </div>
+        <div class="badges">${BADGES.map(b => `<span class="badge ${b.test(st)?'':'locked'}" title="${b.label}">${b.icon} ${b.label}</span>`).join('')}</div></div>`;
+    }).join('')}
+    <div class="card"><h3>🍲 أخطر أكل في البيت</h3>
+      ${foodRows.length ? `<div class="tablewrap"><table><tr><th>الأكل</th><th>مرات</th><th>متوسط نقاط اليوم</th><th></th></tr>
+        ${foodRows.map((f,i) => `<tr><td>${f.icon} ${f.label}</td><td class="num">${f.n}</td><td class="num">${f.avg.toFixed(1)}</td>
+          <td>${base && f.avg > base*1.2 ? `⚠️ ×${(f.avg/base).toFixed(1)}` : i===0 ? '☢️' : ''}</td></tr>`).join('')}</table></div>
+        <div class="muted">متوسط نقاط اليوم العادي: ${base.toFixed(1)}</div>`
+      : '<div class="muted">سجّلوا ماذا أكلتم من بطاقة كل واحد (🍲 ماذا أكل اليوم؟) لنعرف أي أكل يصنع أقوى غاز.</div>'}</div>`;
+}
+
+function renderHistory(){
+  const keys = pastMonths(), wins = winsCount();
+  const titles = `<div class="card titles"><h3>ألقاب وجوائز نهاية الشهر</h3>
+      <div><span>🥇 الأول</span><span class="title">${TITLES[0]}</span></div><div class="prize">🎁 ${PRIZES[0]}</div>
+      <div><span>🥈 الثاني</span><span class="title">${TITLES[1]}</span></div><div class="prize">🎁 ${PRIZES[1]}</div>
+      <div><span>🥉 الثالث</span><span class="title">${TITLES[2]}</span></div><div class="prize">🎁 ${PRIZES[2]}</div>
+      <div><span>😇 الأخير</span><span class="title">🐣 المبتدئ الخجول</span></div><div class="prize punish">⚠️ عقوبة: ${PUNISH}</div></div>`;
+  const install = `<div class="card"><h3>📲 ضعه على شاشة الهاتف</h3>
+      <div><b>آيفون:</b> افتح الرابط في Safari ← زر المشاركة ⬆️ ← «إضافة إلى الشاشة الرئيسية».</div>
+      <div style="margin-top:6px"><b>أندرويد:</b> افتح الرابط في Chrome ← القائمة ⋮ ← «إضافة إلى الشاشة الرئيسية».</div></div>`;
+  $('history').innerHTML = titles + (keys.length ? `
+    <div class="card tablewrap"><table><tr><th>الاسم</th><th>الألقاب</th></tr>
+      ${MEMBERS.map(m => `<tr><td>${small(m)} ${esc(m.name)}</td><td class="num">${'🏆'.repeat(wins[m.id]) || '0'}</td></tr>`).join('')}</table></div>
+    <div class="card tablewrap"><table><tr><th>الشهر</th><th>☢️ ملك النووي</th><th>النقاط</th><th></th></tr>
+      ${keys.map(k => { const w = winnerOf(k); return w ? `<tr><td>${monthName(k)}</td><td>${small(w)} ${esc(w.name)}</td><td class="num">${w.points}</td>
+        <td><button class="btn small" data-celebrate="${k}">🎉</button> <button class="btn small" data-cert="${k}">📜</button></td></tr>` : ''; }).join('')}</table></div>`
+    : `<div class="card note">لا يوجد أبطال بعد 🤷<br>أول ☢️ ملك النووي يُتوَّج في نهاية هذا الشهر 🏆</div>`) + install;
+}
+
+/* ============ EFFECTS ============ */
+function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 1800); }
+function flyText(x, y, items){
+  items.forEach((t,i) => setTimeout(() => {
+    const p = document.createElement('div'); p.className = 'puff'; p.textContent = t;
+    p.style.left = (x-30)+'px'; p.style.top = (y-20)+'px';
+    p.style.setProperty('--dx', (Math.random()*160-80)+'px'); p.style.setProperty('--r', (Math.random()*60-30)+'deg');
+    document.body.appendChild(p); setTimeout(() => p.remove(), 1600);
+  }, i*80));
+}
+function shake(){ document.body.classList.remove('shake'); void document.body.offsetWidth; document.body.classList.add('shake'); }
+let ac;
+function audio(){ try { return ac ||= new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { return null; } }
+function fart(v){
+  if(!soundOn) return; const a = audio(); if(!a) return;
+  try {
+    const t = a.currentTime, dur = .25 + v*.15;
+    const o = a.createOscillator(), g = a.createGain(), lfo = a.createOscillator(), lg = a.createGain(), f = a.createBiquadFilter();
+    o.type = 'sawtooth'; o.frequency.setValueAtTime(90 + Math.random()*40, t); o.frequency.exponentialRampToValueAtTime(45, t+dur);
+    lfo.frequency.value = 18 + Math.random()*14; lg.gain.value = 30; lfo.connect(lg); lg.connect(o.frequency);
+    f.type = 'lowpass'; f.frequency.value = 500 + v*120;
+    g.gain.setValueAtTime(.001, t); g.gain.exponentialRampToValueAtTime(.5, t+.03); g.gain.exponentialRampToValueAtTime(.001, t+dur);
+    o.connect(f); f.connect(g); g.connect(a.destination); o.start(t); lfo.start(t); o.stop(t+dur); lfo.stop(t+dur);
+  } catch(e) {}
+}
+function fanfare(){
+  if(!soundOn) return; const a = audio(); if(!a) return;
+  [523,659,784,1047,784,1047].forEach((fq,i) => {
+    const o = a.createOscillator(), g = a.createGain(), t = a.currentTime + i*.18;
+    o.type = 'square'; o.frequency.value = fq; g.gain.setValueAtTime(.12, t); g.gain.exponentialRampToValueAtTime(.001, t + (i===5 ? .8 : .17));
+    o.connect(g); g.connect(a.destination); o.start(t); o.stop(t+.9);
+  });
+}
+function announce(text){
+  const a = $('announcer'); a.textContent = '📢 ' + text; a.classList.add('show');
+  clearTimeout(a._h); a._h = setTimeout(() => a.classList.remove('show'), 4200);
+  if(!soundOn) return;
+  const plain = text.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}️‍]/gu, '').trim();
+  if(tts){ tts.speak(plain, {language:'ar'}).catch(() => {}); return; }
+  try { if('speechSynthesis' in window){ speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(plain); u.lang = 'ar'; speechSynthesis.speak(u); } } catch(e) {}
+}
+function confetti(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const c = $('confetti'), x = c.getContext('2d'); c.hidden = false;
+  c.width = innerWidth; c.height = innerHeight;
+  const cols = ['#ffd23f','#ff6fae','#8a5cf6','#5fd068','#7fd3ff','#ffa94d'], emo = ['💨','🏆','☢️','👑'];
+  const ps = Array.from({length:140}, (_,i) => ({x:Math.random()*c.width, y:-20-Math.random()*c.height, vy:2+Math.random()*4, vx:Math.random()*2-1, r:Math.random()*6, s:6+Math.random()*8, c:cols[i%cols.length], e: i%9===0 ? emo[i%4] : null}));
+  const end = performance.now() + 4500;
+  (function step(now){
+    x.clearRect(0,0,c.width,c.height);
+    ps.forEach(p => { p.y += p.vy; p.x += p.vx; p.r += .1;
+      x.save(); x.translate(p.x,p.y); x.rotate(p.r);
+      if(p.e){ x.font = '24px sans-serif'; x.fillText(p.e, 0, 0); } else { x.fillStyle = p.c; x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2); }
+      x.restore(); });
+    if(now < end) requestAnimationFrame(step); else { x.clearRect(0,0,c.width,c.height); c.hidden = true; }
+  })(performance.now());
+}
+function celebrate(k){
+  const w = winnerOf(k); if(!w) return;
+  ls.set('gas-celebrated-' + k, 1);
+  $('overlay').innerHTML = `<div class="overlay" data-close="1"><div class="card crown">
+    <div class="big">👑</div><div>تتويج ${monthName(k)}</div>
+    <h2>${esc(w.name)}</h2><div class="title" style="font-size:.9rem">${TITLES[0]}</div>
+    <div style="margin-top:8px">${w.points} نقطة · ${w.count} غاز</div>
+    <div class="prize">🎁 ${PRIZES[0]}</div>
+    <div style="margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+      <button class="btn" data-cert="${k}">📜 الشهادة الرسمية</button><button class="btn" data-close="1" style="background:var(--white)">إغلاق</button></div></div></div>`;
+  confetti(); fanfare();
+  announce(`سيداتي سادتي! ملك النووي لشهر ${monthName(k)} هو ${w.name}! تصفيق حار... ومن بعيد!`);
+}
+
+/* ============ CERTIFICATE ============ */
+async function certificate(k){
+  const w = winnerOf(k); if(!w) return;
+  try { await Promise.all([document.fonts.load('60px Lalezar'), document.fonts.load('30px Marhey')]); } catch(e) {}
+  const c = document.createElement('canvas'); c.width = 1080; c.height = 1350; const x = c.getContext('2d');
+  x.fillStyle = '#c8f169'; x.fillRect(0,0,1080,1350);
+  x.fillStyle = '#fffbe8'; x.strokeStyle = '#2a1a3b'; x.lineWidth = 14;
+  x.fillRect(60,60,960,1230); x.strokeRect(60,60,960,1230);
+  x.setLineDash([18,14]); x.lineWidth = 5; x.strokeRect(95,95,890,1160); x.setLineDash([]);
+  x.direction = 'rtl'; x.textAlign = 'center'; x.fillStyle = '#2a1a3b';
+  const T = (txt, y, size, font='Lalezar', color='#2a1a3b') => { x.font = `${size}px ${font}, sans-serif`; x.fillStyle = color; x.fillText(txt, 540, y); };
+  x.font = '150px sans-serif'; x.fillText('👑', 540, 290);
+  T('شهادة رسمية', 410, 90);
+  T('تشهد العائلة الموقّرة بأنّ', 500, 40, 'Marhey', '#6b5a7a');
+  T(w.name, 640, 110, 'Lalezar', '#8a5cf6');
+  T('قد نال لقب', 740, 40, 'Marhey', '#6b5a7a');
+  T(TITLES[0], 840, 90, 'Lalezar', '#c2185b');
+  T(`عن شهر ${monthName(k)} بـ ${w.points} نقطة و${w.count} غاز`, 940, 40, 'Marhey');
+  T('الجائزة: رحلة إلى إيران ☢️✈️', 1030, 40, 'Marhey');
+  x.save(); x.translate(820, 1150); x.rotate(-.2); x.strokeStyle = '#c2185b'; x.lineWidth = 8; x.beginPath(); x.arc(0,0,95,0,Math.PI*2); x.stroke();
+  x.font = '34px Lalezar, sans-serif'; x.fillStyle = '#c2185b'; x.fillText('مختوم', 0, -8); x.fillText('ومُعطّر 💨', 0, 34); x.restore();
+  T('لجنة عدّاد الغازات العائلي', 1180, 32, 'Marhey', '#6b5a7a');
+  const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+  const url = URL.createObjectURL(blob);
+  $('overlay').innerHTML = `<div class="overlay" data-close="1"><div class="card">
+    <h3>📜 شهادة ${esc(w.name)}</h3><img src="${url}" alt="الشهادة">
+    <div style="margin-top:10px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+      <button class="btn" id="savecert">⬇️ حفظ الصورة</button><button class="btn" data-close="1" style="background:var(--white)">إغلاق</button></div>
+    <div class="muted" style="margin-top:6px">أرسلها في مجموعة واتساب العائلة 😂</div></div></div>`;
+  $('savecert').onclick = async () => {
+    const fname = `shahada-${k}.png`;
+    if(downloads){ try { await downloads.save({filename:fname, data:blob}); toast('تم الحفظ ✅'); } catch(e){ if(e?.code !== 'declined') toast('تعذّر الحفظ هنا، اضغط مطوّلًا على الصورة'); } return; }
+    const a = document.createElement('a'); a.href = url; a.download = fname; document.body.appendChild(a); a.click(); a.remove();
+  };
+}
+
+/* ============ PHOTOS ============ */
+let photoFor = null;
+$('photo').addEventListener('change', async ev => {
+  const f = ev.target.files[0]; ev.target.value = ''; if(!f || !photoFor) return;
+  try {
+    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(f); });
+    const c = document.createElement('canvas'), S = 128; c.width = c.height = S;
+    const s = Math.min(img.width, img.height);
+    c.getContext('2d').drawImage(img, (img.width-s)/2, (img.height-s)/2, s, s, 0, 0, S, S);
+    await setPhoto(photoFor, c.toDataURL('image/jpeg', .8));
+    toast('تم تغيير الصورة 📸');
+  } catch(e) { toast('تعذّرت قراءة الصورة'); }
+});
+
+/* ============ EVENTS ============ */
+function record(ev, x, y){
+  const now = new Date(), day = dayKey(now), ch = challengeFor(day);
+  ev.t = now.getTime(); if(me) ev.by = me;
+  ev.mult = ch.mult(ev);
+  putEvent(day, newId(), ev);
+  if(ev.mult > 1) setTimeout(() => toast(`⚔️ تحدي اليوم! النقاط ×${ev.mult}`), 1900);
+}
+document.addEventListener('click', ev => {
+  const q = s => ev.target.closest(s);
+  let b;
+  if(b = q('[data-v]')){
+    const v = +b.dataset.v, m = MEM[b.dataset.who];
+    record({who:m.id, kind:'gas', stink:v});
+    flyText(ev.clientX, ev.clientY, ['💨', ['بررررت!','بوووف!','فسسس...','بااام!','پرررر!'][Math.floor(Math.random()*5)], ...Array(v).fill('💨')]);
+    fart(v); toast(`${m.name}: ${LEVELS[v-1].label} ${LEVELS[v-1].icon}`);
+    const lines = COMMENTS[v]; announce(lines[Math.floor(Math.random()*lines.length)].replace('{n}', m.name));
+    document.querySelector(`#card-${m.id} .count`)?.classList.add('bump');
+    if(v >= 4) shake();
+    return;
+  }
+  if(b = q('[data-bonus]')){
+    const m = MEM[b.dataset.who], bn = BONUS[b.dataset.bonus];
+    record({who:m.id, kind:'bonus', bonus:bn.id});
+    fart(5); setTimeout(() => fart(5), 350); flyText(ev.clientX, ev.clientY, bn.fx);
+    toast(`${bn.icon} ${m.name}: ${bn.label} +${bn.pts}`);
+    announce(`${m.name} ${bn.label}! يا لها من حركة أسطورية تستحق ${bn.pts} نقاط!`);
+    shake(); return;
+  }
+  if(b = q('[data-food]')){
+    const m = MEM[b.dataset.who], f = FOOD[b.dataset.food], day = dayKey(new Date());
+    const ex = EVENTS.find(e => e.day===day && e.kind==='food' && e.who===m.id && e.food===f.id);
+    if(ex) patchEvent(day, ex.id, null);
+    else { record({who:m.id, kind:'food', food:f.id}); toast(`${f.icon} ${m.name} أكل ${f.label}... انتبهوا! 😨`); }
+    setTimeout(() => { const d = document.querySelector(`#card-${m.id} details.food`); if(d) d.open = true; }, 0);
+    return;
+  }
+  if(b = q('[data-vote]')){
+    if(!me) return;
+    patchEvent(b.dataset.day, b.dataset.vote, {votes:{[me]: +b.dataset.v2}});
+    toast('تم احتساب صوتك 🗳️'); return;
+  }
+  if(b = q('[data-me]')){ me = b.dataset.me; ls.set('gas-me', me); renderAll(); return; }
+  if(b = q('[data-photo]')){ photoFor = b.dataset.photo; $('photo').click(); return; }
+  if(b = q('[data-undo]')){
+    const day = dayKey(new Date());
+    const last = EVENTS.filter(e => e.who===b.dataset.undo && e.day===day && e.kind!=='food').pop();
+    if(last){ patchEvent(day, last.id, null); toast('تم التراجع ↩️'); }
+    return;
+  }
+  if(b = q('[data-celebrate]')){ celebrate(b.dataset.celebrate); return; }
+  if(b = q('[data-cert]')){ certificate(b.dataset.cert); return; }
+  if(ev.target.closest('[data-close]') && (ev.target.dataset.close || ev.target.closest('button[data-close]'))){ $('overlay').innerHTML = ''; return; }
+  if(q('#sound')){ soundOn = !soundOn; ls.set('gas-sound', soundOn ? 'on' : 'off'); if(!soundOn){ try { tts?.stop(); speechSynthesis?.cancel(); } catch(e) {} } renderAll(); return; }
+  if(b = q('[data-tab]')){
+    tab = b.dataset.tab;
+    document.querySelectorAll('[data-tab]').forEach(x => x.classList.toggle('on', x === b));
+    ['today','month','stats','history'].forEach(id => $(id).hidden = id !== tab);
+    renderAll();
+  }
+});
+document.addEventListener('change', ev => { if(ev.target.id === 'monthsel'){ monthSel = ev.target.value; renderAll(); } });
+
+/* ============ BOOT ============ */
+function setStatus(t){ $('status').innerHTML = t ? `<span>${t}</span>` : ''; }
+let celebrateChecked = false;
+function maybeAutoCelebrate(){
+  if(celebrateChecked) return; celebrateChecked = true;
+  const [y,m] = monthKey(new Date()).split('-').map(Number);
+  const prev = monthKey(new Date(y, m-2, 1));
+  if(winnerOf(prev) && !ls.get('gas-celebrated-' + prev, 0)) setTimeout(() => celebrate(prev), 600);
+}
+function startLocal(note){
+  backend = 'local'; loadLocal(); renderAll(); maybeAutoCelebrate();
+  setStatus(note);
+}
+async function start(){
+  renderAll();
+  if(!window.claude?.use){ startLocal('💾 البيانات محفوظة على هذا الجهاز فقط'); return; }
+  setStatus('⏳ جارٍ الاتصال بالعدّاد المشترك...');
+  window.claude.use('tts').then(t => tts = t).catch(() => {});
+  window.claude.use('downloads').then(d => downloads = d).catch(() => {});
+  db = await window.claude.use('db').catch(() => null);
+  if(!db){ startLocal('💾 العدّاد المشترك غير متاح هنا، البيانات على هذا الجهاز فقط'); return; }
+  backend = 'shared';
+  const timer = setTimeout(() => setStatus('⚠️ تعذّر الوصول للعدّاد المشترك الآن، قد تكون الأرقام قديمة'), 10000);
+  db.collection('days').onSnapshot(snap => {
+    const next = {};
+    snap.docs.forEach(d => { const v = d.data(); if(v && v.ev) next[d.id] = {ev: JSON.parse(JSON.stringify(v.ev))}; });
+    for(const [day, d] of Object.entries(DAYS)) for(const [id, e] of Object.entries(d.ev)) if(!(next[day]?.ev && id in next[day].ev)) { /* keep optimistic local until confirmed */ (next[day] ||= {ev:{}}).ev[id] = e; }
+    DAYS = next; renderAll();
+    if(!snap.metadata.fromCache){ clearTimeout(timer); setStatus('🌐 عدّاد مشترك لكل العائلة'); maybeAutoCelebrate(); }
+  }, err => { clearTimeout(timer); setStatus('⚠️ انقطع الاتصال بالعدّاد المشترك'); });
+  db.doc('meta/photos').onSnapshot(s => { PHOTOS = s.exists ? {...s.data()} : {}; renderAll(); }, () => {});
+}
+start();
+</script>
