@@ -646,7 +646,22 @@ function flyText(x, y, items){
 }
 function shake(){ document.body.classList.remove('shake'); void document.body.offsetWidth; document.body.classList.add('shake'); }
 let ac;
-function audio(){ try { return ac ||= new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { return null; } }
+// iPhone: play even when the silent switch is on (Safari 16.4+).
+try { if(navigator.audioSession) navigator.audioSession.type = 'playback'; } catch(e) {}
+function audio(){
+  try {
+    ac ||= new (window.AudioContext || window.webkitAudioContext)();
+    if(ac.state !== 'running') ac.resume().catch(() => {});
+    return ac;
+  } catch(e) { return null; }
+}
+// Phones keep web audio locked until a touch: unlock it on the first tap anywhere.
+function unlockAudio(){
+  const a = audio(); if(!a) return;
+  try { const b = a.createBuffer(1, 1, 22050), src = a.createBufferSource(); src.buffer = b; src.connect(a.destination); src.start(0); } catch(e) {}
+  try { if('speechSynthesis' in window) speechSynthesis.getVoices(); } catch(e) {}
+}
+['pointerdown','touchend','keydown'].forEach(t => document.addEventListener(t, unlockAudio, {once:true, capture:true}));
 function fart(v){
   if(!soundOn) return; const a = audio(); if(!a) return;
   try {
@@ -673,7 +688,14 @@ function announce(text){
   if(!soundOn) return;
   const plain = text.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}️‍]/gu, '').trim();
   if(tts){ tts.speak(plain, {language:'ar'}).catch(() => {}); return; }
-  try { if('speechSynthesis' in window){ speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(plain); u.lang = 'ar'; speechSynthesis.speak(u); } } catch(e) {}
+  try {
+    if('speechSynthesis' in window){
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(plain); u.lang = 'ar';
+      const v = speechSynthesis.getVoices().find(v => /^ar/i.test(v.lang)); if(v) u.voice = v;
+      speechSynthesis.speak(u);
+    }
+  } catch(e) {}
 }
 function confetti(){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -809,7 +831,7 @@ document.addEventListener('click', ev => {
   if(b = q('[data-celebrate]')){ celebrate(b.dataset.celebrate); return; }
   if(b = q('[data-cert]')){ certificate(b.dataset.cert); return; }
   if(ev.target.closest('[data-close]') && (ev.target.dataset.close || ev.target.closest('button[data-close]'))){ $('overlay').innerHTML = ''; return; }
-  if(q('#sound')){ soundOn = !soundOn; ls.set('gas-sound', soundOn ? 'on' : 'off'); if(!soundOn){ try { tts?.stop(); speechSynthesis?.cancel(); } catch(e) {} } renderAll(); return; }
+  if(q('#sound')){ soundOn = !soundOn; ls.set('gas-sound', soundOn ? 'on' : 'off'); if(soundOn){ fart(3); setTimeout(() => announce('الصوت يعمل! جاهزون للقصف 💨'), 500); } else toast('🔇 الصوت مطفأ'); if(!soundOn){ try { tts?.stop(); speechSynthesis?.cancel(); } catch(e) {} } renderAll(); return; }
   if(b = q('[data-tab]')){
     tab = b.dataset.tab;
     document.querySelectorAll('[data-tab]').forEach(x => x.classList.toggle('on', x === b));
