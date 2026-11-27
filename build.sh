@@ -8,8 +8,8 @@ cd "$(dirname "$0")"
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon.svg">
-<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="logo2.svg">
+<link rel="apple-touch-icon" href="logo2-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="عدّاد الغازات">
@@ -40,7 +40,7 @@ if('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serv
   let deferred = null;
   const card = document.createElement('div');
   card.className = 'installcard';
-  card.innerHTML = '<img src="icon-192.png" alt=""><div><b>📲 ثبّت التطبيق على الشاشة</b><br>يفتح بضغطة واحدة مثل أي تطبيق</div><button id="installbtn">ثبّت</button><button class="x" id="installx" title="إخفاء">✕</button>';
+  card.innerHTML = '<img src="logo2-192.png" alt=""><div><b>📲 ثبّت التطبيق على الشاشة</b><br>يفتح بضغطة واحدة مثل أي تطبيق</div><button id="installbtn">ثبّت</button><button class="x" id="installx" title="إخفاء">✕</button>';
   if(!dismissed) document.querySelector('.status').after(card);
   addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; if(!card.isConnected) document.querySelector('.status').after(card); });
   addEventListener('appinstalled', () => card.remove());

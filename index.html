@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon.svg">
-<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="logo2.svg">
+<link rel="apple-touch-icon" href="logo2-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="عدّاد الغازات">
@@ -26,8 +26,8 @@
 <title>عدّاد غازات العائلة</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="artifact-thumbnail" href="thumb.png">
-<link rel="icon" href="icon.svg">
-<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="logo2.svg">
+<link rel="apple-touch-icon" href="logo2-180.png">
 <link href="https://fonts.googleapis.com/css2?family=Marhey:wght@400;700&family=Lalezar&display=swap" rel="stylesheet">
 <style>
 /* Cartoon "gas lab": lime ground, cream sticker cards with thick ink outlines and hard shadows */
@@ -193,7 +193,7 @@ header.top .sound{position:static;width:46px;height:46px;font-size:1.3rem}
 
 <div class="app" dir="rtl" lang="ar">
   <header class="top">
-    <img class="logo" src="icon.svg" alt="">
+    <img class="logo" src="logo2.svg" alt="">
     <div class="htxt"><h1>عدّاد الغازات</h1><div class="countdown" id="countdown"></div></div>
     <button class="sound" id="sound" title="الصوت والمذيع">🔊</button>
   </header>
@@ -866,7 +866,7 @@ if('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serv
   let deferred = null;
   const card = document.createElement('div');
   card.className = 'installcard';
-  card.innerHTML = '<img src="icon-192.png" alt=""><div><b>📲 ثبّت التطبيق على الشاشة</b><br>يفتح بضغطة واحدة مثل أي تطبيق</div><button id="installbtn">ثبّت</button><button class="x" id="installx" title="إخفاء">✕</button>';
+  card.innerHTML = '<img src="logo2-192.png" alt=""><div><b>📲 ثبّت التطبيق على الشاشة</b><br>يفتح بضغطة واحدة مثل أي تطبيق</div><button id="installbtn">ثبّت</button><button class="x" id="installx" title="إخفاء">✕</button>';
   if(!dismissed) document.querySelector('.status').after(card);
   addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; if(!card.isConnected) document.querySelector('.status').after(card); });
   addEventListener('appinstalled', () => card.remove());
