@@ -31,7 +31,15 @@ HEAD
   grep -v '^<meta charset' app.html
   cat <<'TAIL'
 <script>
-if('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(() => {});
+if('serviceWorker' in navigator && location.protocol !== 'file:'){
+  // When a new version takes over, reload once so the screen shows it right away.
+  const hadController = !!navigator.serviceWorker.controller; let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if(hadController && !reloaded){ reloaded = true; location.reload(); } });
+  navigator.serviceWorker.register('sw.js', {updateViaCache:'none'}).then(reg => {
+    reg.update().catch(() => {});
+    document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') reg.update().catch(() => {}); });
+  }).catch(() => {});
+}
 (function(){
   const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
   if(standalone) return;                                   // already opened from the home screen

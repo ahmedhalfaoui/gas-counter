@@ -1,5 +1,5 @@
 // Offline cache for the installable app. Bump VERSION when files change.
-const VERSION = 'gas-v13';
+const VERSION = 'gas-v14';
 const CORE = ['./', './index.html', './manifest.json', './logo2.svg', './logo2-180.png', './logo2-192.png', './logo2-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE.map(u => new Request(u, {cache:'reload'})))).then(() => self.skipWaiting()));
@@ -13,7 +13,7 @@ self.addEventListener('fetch', e => {
   const url = new URL(req.url);
   // Pages: network first so updates arrive, cache as fallback when offline.
   if(req.mode === 'navigate'){
-    e.respondWith(fetch(req).then(r => { const copy = r.clone(); caches.open(VERSION).then(c => c.put('./index.html', copy)); return r; })
+    e.respondWith(fetch(req, {cache:'no-cache'}).then(r => { const copy = r.clone(); caches.open(VERSION).then(c => c.put('./index.html', copy)); return r; })
       .catch(() => caches.match('./index.html')));
     return;
   }
