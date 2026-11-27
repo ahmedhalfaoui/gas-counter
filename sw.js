@@ -1,5 +1,5 @@
 // Offline cache for the installable app. Bump VERSION when files change.
-const VERSION = 'gas-v12';
+const VERSION = 'gas-v13';
 const CORE = ['./', './index.html', './manifest.json', './logo2.svg', './logo2-180.png', './logo2-192.png', './logo2-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE.map(u => new Request(u, {cache:'reload'})))).then(() => self.skipWaiting()));
