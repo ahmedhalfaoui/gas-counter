@@ -521,22 +521,7 @@ function flyText(x, y, items){
 }
 function shake(){ document.body.classList.remove('shake'); void document.body.offsetWidth; document.body.classList.add('shake'); }
 let ac;
-// iPhone: play even when the silent switch is on (Safari 16.4+).
-try { if(navigator.audioSession) navigator.audioSession.type = 'playback'; } catch(e) {}
-function audio(){
-  try {
-    ac ||= new (window.AudioContext || window.webkitAudioContext)();
-    if(ac.state !== 'running') ac.resume().catch(() => {});
-    return ac;
-  } catch(e) { return null; }
-}
-// Phones keep audio locked until the first touch: unlock it on the first tap anywhere.
-function unlockAudio(){
-  const a = audio(); if(!a) return;
-  try { const b = a.createBuffer(1, 1, 22050), s = a.createBufferSource(); s.buffer = b; s.connect(a.destination); s.start(0); } catch(e) {}
-  try { if('speechSynthesis' in window) speechSynthesis.getVoices(); } catch(e) {}
-}
-['pointerdown','touchend','keydown'].forEach(t => document.addEventListener(t, unlockAudio, {once:true, capture:true}));
+function audio(){ try { return ac ||= new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { return null; } }
 function fart(v){
   if(!soundOn) return; const a = audio(); if(!a) return;
   try {
@@ -557,25 +542,13 @@ function fanfare(){
     o.connect(g); g.connect(a.destination); o.start(t); o.stop(t+.9);
   });
 }
-function phoneSpeak(text){
-  try {
-    if(!('speechSynthesis' in window)) return;
-    speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text); u.lang = 'ar';
-    const v = speechSynthesis.getVoices().find(v => /^ar/i.test(v.lang));
-    if(v) u.voice = v;
-    u.rate = 1.05;
-    speechSynthesis.speak(u);
-  } catch(e) {}
-}
 function announce(text){
   const a = $('announcer'); a.textContent = '📢 ' + text; a.classList.add('show');
   clearTimeout(a._h); a._h = setTimeout(() => a.classList.remove('show'), 4200);
   if(!soundOn) return;
   const plain = text.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}️‍]/gu, '').trim();
-  // Claude's voice where it is offered, otherwise the phone's own voice.
-  if(tts){ tts.speak(plain, {language:'ar'}).catch(() => phoneSpeak(plain)); return; }
-  phoneSpeak(plain);
+  if(tts){ tts.speak(plain, {language:'ar'}).catch(() => {}); return; }
+  try { if('speechSynthesis' in window){ speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(plain); u.lang = 'ar'; speechSynthesis.speak(u); } } catch(e) {}
 }
 function confetti(){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
